@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,6 +39,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainContent(name: String, sensorsMa: SensorMa?) {
+    var updateStatusCounter by remember {
+        mutableStateOf( 0 )
+    }
     Column {
         Text(
             text = name,
@@ -51,12 +54,15 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
         Divider(color = Color.Black)
         if (sensorsMa != null) {
             Column(
-                modifier = Modifier.padding(horizontal = 8.dp).weight(0.6F, true)
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .weight(0.6F, true)
             ) {
                 for (item in sensorsMa.sensorsList) {
                     Button(
                         onClick = {
                             sensorsMa.setSensor(item)
+                            updateStatusCounter += 1
                         },
                     ) {
                         Text(text=item.name)
@@ -65,7 +71,9 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
             }
         }
         Divider(color = Color.Black)
-        sensorsMa?.status()?.let { Text(text = it, modifier = Modifier.weight(0.2f)) }
+        if (updateStatusCounter > 0) {
+            sensorsMa?.status()?.let { Text(text = it, modifier = Modifier.weight(0.4f)) }
+        }
     }
 }
 
