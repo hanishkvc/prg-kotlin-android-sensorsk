@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,18 +40,24 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent(name: String, sensorsMa: SensorMa?) {
     Column {
-        Text(text = name, modifier = Modifier.padding(4.dp, 20.dp).align(Alignment.CenterHorizontally))
+        Text(
+            text = name,
+            fontSize = 20.sp,
+            fontStyle = FontStyle.Normal,
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Divider(color = Color.Black)
-        var sList = "${name}:"
         if (sensorsMa != null) {
-            Column {
+            Column(
+                modifier = Modifier.padding(horizontal = 8.dp).weight(0.6F, true)
+            ) {
                 for (item in sensorsMa.sensorsList) {
-                    sList += "\n ${item.name}"
                     Button(
                         onClick = {
-
+                            sensorsMa.setSensor(item)
                         },
-                        modifier = Modifier.padding(10.dp, 2.dp)
                     ) {
                         Text(text=item.name)
                     }
@@ -57,7 +65,7 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
             }
         }
         Divider(color = Color.Black)
-        //Text(text = sList)
+        sensorsMa?.status()?.let { Text(text = it, modifier = Modifier.weight(0.2f)) }
     }
 }
 

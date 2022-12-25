@@ -6,6 +6,7 @@ import android.hardware.SensorManager
 class SensorMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
+    var theSensor: Sensor? = null
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -24,6 +25,17 @@ class SensorMa(private val sensorsType: Int) {
             }
             sensorsList.add(sensor)
         }
+    }
+
+    fun setSensor(sensor: Sensor) {
+        theSensor = sensor
+    }
+
+    fun status(): String {
+        if (theSensor == null) {
+            return "Sensor not yet selected"
+        }
+        return "Sensor ${theSensor?.name} selected"
     }
 
 }
