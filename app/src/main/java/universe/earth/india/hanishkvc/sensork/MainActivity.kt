@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -57,6 +59,7 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .weight(0.6F, true)
+                    .verticalScroll(rememberScrollState())
             ) {
                 for (item in sensorsMa.sensorsList) {
                     Button(
