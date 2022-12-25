@@ -35,6 +35,10 @@ class SensorMa(private val sensorsType: Int) {
         sensorManager?.registerListener(activity, theSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
+    fun monitorStop(activity: MainActivity) {
+        sensorManager?.unregisterListener(activity)
+    }
+
     fun status(): String {
         if (theSensor == null) {
             return "Sensor not yet selected"

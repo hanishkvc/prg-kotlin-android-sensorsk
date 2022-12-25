@@ -52,6 +52,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         Log.i(TAG, "onAccuracyChanged: ")
     }
 
+    override fun onPause() {
+        super.onPause()
+        sensorMa.monitorStop(this)
+    }
+
 }
 
 @Composable
