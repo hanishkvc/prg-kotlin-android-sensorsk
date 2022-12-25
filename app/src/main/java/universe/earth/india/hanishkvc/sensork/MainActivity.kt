@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -60,6 +61,7 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
                     .padding(horizontal = 8.dp)
                     .weight(0.6F, true)
                     .verticalScroll(rememberScrollState())
+                    .fillMaxWidth()
             ) {
                 for (item in sensorsMa.sensorsList) {
                     Button(
