@@ -35,7 +35,13 @@ class SensorMa(private val sensorsType: Int) {
         if (theSensor == null) {
             return "Sensor not yet selected"
         }
-        return "Sensor ${theSensor?.name} selected"
+        var info = "Sensor ${theSensor?.name} selected\n"
+        info += "\tminDelay [${theSensor?.minDelay}], maxDelay [${theSensor?.maxDelay}]\n"
+        info += "\tresolution [${theSensor?.resolution}]\n"
+        info += "\tmaxRange [${theSensor?.maximumRange}]\n"
+        info += "\tpower [${theSensor?.power}]\n"
+        info += "\tvendor [${theSensor?.vendor}], version [${theSensor?.version}]\n"
+        return info
     }
 
 }
