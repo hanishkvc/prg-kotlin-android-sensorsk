@@ -1,8 +1,11 @@
 package universe.earth.india.hanishkvc.sensork
 
 import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -22,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 
-class MainActivity : ComponentActivity() {
+const val TAG = "SensorK"
+
+class MainActivity : ComponentActivity(), SensorEventListener {
     lateinit var sensorMa: SensorMa
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +43,15 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onSensorChanged(se: SensorEvent?) {
+        Log.i(TAG, "onSensorChanged: ${se?.values}")
+    }
+
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+        Log.i(TAG, "onAccuracyChanged: ")
+    }
+
 }
 
 @Composable
