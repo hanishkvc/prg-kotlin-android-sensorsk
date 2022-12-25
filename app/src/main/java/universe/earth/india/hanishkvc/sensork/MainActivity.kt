@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             SensorKTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    MainContent("Sensors", sensorMa)
+                    MainContent("Sensors", sensorMa, this)
                 }
             }
         }
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 }
 
 @Composable
-fun MainContent(name: String, sensorsMa: SensorMa?) {
+fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?) {
     var updateStatusCounter by remember {
         mutableStateOf( 0 )
     }
@@ -81,6 +81,7 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
                     Button(
                         onClick = {
                             sensorsMa.setSensor(item)
+                            mainActivity?.let { sensorsMa.monitorSensor(mainActivity) }
                             updateStatusCounter += 1
                         },
                     ) {
@@ -100,6 +101,6 @@ fun MainContent(name: String, sensorsMa: SensorMa?) {
 @Composable
 fun DefaultPreview() {
     SensorKTheme {
-        MainContent("Android", null)
+        MainContent("Android", null, null)
     }
 }
