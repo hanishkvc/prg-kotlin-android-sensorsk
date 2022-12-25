@@ -8,10 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,20 +18,17 @@ import androidx.compose.ui.unit.dp
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 
 class MainActivity : ComponentActivity() {
-    var sensorManager: SensorManager? = null
-    var sensorsList: List<Sensor>? = null
+    lateinit var sensorMa: SensorMa
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        sensorManager.also {
-            sensorsList = it?.getSensorList(Sensor.TYPE_ALL)
-        }
+        sensorMa = SensorMa(Sensor.TYPE_ALL)
+        sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
         setContent {
             SensorKTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    MainContent("Sensors", this.sensorsList)
+                    MainContent("Sensors", sensorMa)
                 }
             }
         }
@@ -42,22 +36,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainContent(name: String, sensorsList: List<Sensor>?) {
-    Column() {
+fun MainContent(name: String, sensorsMa: SensorMa?) {
+    Column {
         Text(text = name, modifier = Modifier.padding(4.dp, 20.dp).align(Alignment.CenterHorizontally))
         Divider(color = Color.Black)
         var sList = "${name}:"
-        if (sensorsList != null) {
-            Column() {
-                for (item in sensorsList) {
-                    if (item.name.contains("uncal", true)) {
-                        continue
-                    }
-                    if (item.isWakeUpSensor) {
-                        continue
-                    }
+        if (sensorsMa != null) {
+            Column {
+                for (item in sensorsMa.sensorsList) {
                     sList += "\n ${item.name}"
-                    Surface(modifier = Modifier.padding(10.dp, 2.dp) ) {
+                    Button(
+                        onClick = {
+
+                        },
+                        modifier = Modifier.padding(10.dp, 2.dp)
+                    ) {
                         Text(text=item.name)
                     }
                 }
