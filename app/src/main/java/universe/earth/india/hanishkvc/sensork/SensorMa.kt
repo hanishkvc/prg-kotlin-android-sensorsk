@@ -3,12 +3,37 @@ package universe.earth.india.hanishkvc.sensork
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import kotlin.math.absoluteValue
+
+data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
+    var count: Int = 0
+
+    fun update(value: Float) {
+        sum += value
+        abssum += value.absoluteValue
+        if (value < min) {
+            min = value
+        }
+        if (value > max) {
+            max = value
+        }
+        count += 1
+    }
+
+    fun avg(): Float {
+        return sum/count
+    }
+
+}
 
 class SensorMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
-    var theSensor: Sensor? = null
-    var eventLog = arrayListOf<String>()
+    private var theSensor: Sensor? = null
+    private var eventLog = arrayListOf<String>()
+    private var ef0: FDataStats = FDataStats()
+    private var ef1: FDataStats = FDataStats()
+    private var ef2: FDataStats = FDataStats()
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -44,7 +69,12 @@ class SensorMa(private val sensorsType: Int) {
     fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
         var sData = "$sName ${se.timestamp}"
-        for (f in se.values) {
+        for ((i,f) in se.values.withIndex()) {
+            when(i) {
+                0 -> ef0.update(f)
+                1 -> ef1.update(f)
+                2 -> ef2.update(f)
+            }
             sData += " $f"
         }
         eventLog.add(sData)
@@ -61,6 +91,9 @@ class SensorMa(private val sensorsType: Int) {
         info += "\tmaxRange [${theSensor?.maximumRange}]\n"
         info += "\tpower [${theSensor?.power}]\n"
         info += "\tvendor [${theSensor?.vendor}], version [${theSensor?.version}]\n"
+        info += "\n"
+        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]"
+        info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]"
         return info
     }
 
