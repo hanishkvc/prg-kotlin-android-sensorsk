@@ -69,7 +69,7 @@ class SensorMa(private val sensorsType: Int) {
     /**
      * Stop listening to events wrt either the passed sensor or any previously set sensor
      */
-    fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor?) {
+    fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
         val remSensor = sensor ?: theSensor
         remSensor?.let { sensorManager?.unregisterListener(activity, remSensor) }
     }

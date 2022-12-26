@@ -28,6 +28,7 @@ import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 const val TAG = "SensorK"
 
 class MainActivity : ComponentActivity(), SensorEventListener {
+    val bMultipleSensors: Boolean = false
     lateinit var sensorMa: SensorMa
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,6 +89,11 @@ fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?)
                     Button(
                         onClick = {
                             if (sensorsMa.theSensor != item) {
+                                mainActivity?.let {
+                                    if (!mainActivity.bMultipleSensors) {
+                                        sensorsMa.monitorRemoveSensor(mainActivity)
+                                    }
+                                }
                                 sensorsMa.setSensor(item)
                                 mainActivity?.let { sensorsMa.monitorAddSensor(mainActivity) }
                             }
