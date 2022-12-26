@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onPause() {
         super.onPause()
-        sensorMa.monitorStop(this)
+        sensorMa.monitorStopAll(this)
     }
 
 }
@@ -89,7 +89,7 @@ fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?)
                         onClick = {
                             if (sensorsMa.theSensor != item) {
                                 sensorsMa.setSensor(item)
-                                mainActivity?.let { sensorsMa.monitorSensor(mainActivity) }
+                                mainActivity?.let { sensorsMa.monitorAddSensor(mainActivity) }
                             }
                             updateStatusCounter += 1
                         },

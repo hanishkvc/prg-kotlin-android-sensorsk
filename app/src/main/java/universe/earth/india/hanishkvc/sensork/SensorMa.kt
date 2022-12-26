@@ -58,11 +58,29 @@ class SensorMa(private val sensorsType: Int) {
         theSensor = sensor
     }
 
-    fun monitorSensor(activity: MainActivity) {
-        sensorManager?.registerListener(activity, theSensor, SensorManager.SENSOR_DELAY_NORMAL)
+    /**
+     * Start listening to events from either the passed sensor or any previously set sensor
+     */
+    fun monitorAddSensor(activity: MainActivity, sensor: Sensor? = null) {
+        val addSensor = sensor ?: theSensor
+        addSensor?.let { sensorManager?.registerListener(activity, addSensor, SensorManager.SENSOR_DELAY_NORMAL) }
     }
 
-    fun monitorStop(activity: MainActivity) {
+    /**
+     * Stop listening to events wrt either the passed sensor or any previously set sensor
+     */
+    fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor?) {
+        val remSensor = sensor ?: theSensor
+        remSensor?.let { sensorManager?.unregisterListener(activity, remSensor) }
+    }
+
+    /**
+     * Stop listening to sensors fully
+     *
+     * NOTE: THis assumes that Android will automatically unregister the individual sensors
+     * added for listening previously.
+     */
+    fun monitorStopAll(activity: MainActivity) {
         sensorManager?.unregisterListener(activity)
     }
 
