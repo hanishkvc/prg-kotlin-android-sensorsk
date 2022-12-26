@@ -1,12 +1,14 @@
 package universe.earth.india.hanishkvc.sensork
 
 import android.hardware.Sensor
+import android.hardware.SensorEvent
 import android.hardware.SensorManager
 
 class SensorMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
     var theSensor: Sensor? = null
+    var eventLog = arrayListOf<String>()
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -37,6 +39,16 @@ class SensorMa(private val sensorsType: Int) {
 
     fun monitorStop(activity: MainActivity) {
         sensorManager?.unregisterListener(activity)
+    }
+
+    fun sensorEvent(se: SensorEvent): String {
+        val sName = se.sensor.name.replace(' ', '-')
+        var sData = "$sName ${se.timestamp}"
+        for (f in se.values) {
+            sData += " $f"
+        }
+        eventLog.add(sData)
+        return sData
     }
 
     fun status(): String {
