@@ -45,11 +45,13 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
-        var sData = ""
-        for (f in se?.values!!) {
-            sData += "\t $f"
+        se ?: return
+        var sName = se.sensor.name.replace(' ', '-')
+        var sData = "$sName ${se.timestamp}"
+        for (f in se.values) {
+            sData += " $f"
         }
-        Log.i(TAG, "onSensorChanged: ${se.sensor.name} $sData")
+        Log.i(TAG, "onSensorChanged: $sData")
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
