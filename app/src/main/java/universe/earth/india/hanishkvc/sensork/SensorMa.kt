@@ -29,7 +29,7 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
 class SensorMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
-    private var theSensor: Sensor? = null
+    var theSensor: Sensor? = null
     private var eventLog = arrayListOf<String>()
     private var ef0: FDataStats = FDataStats()
     private var ef1: FDataStats = FDataStats()
@@ -92,8 +92,10 @@ class SensorMa(private val sensorsType: Int) {
         info += "\tpower [${theSensor?.power}]\n"
         info += "\tvendor [${theSensor?.vendor}], version [${theSensor?.version}]\n"
         info += "\n"
-        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]"
-        info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]"
+        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]\n"
+        info += "\tDMin [${ef0.min}, ${ef1.min}, ${ef2.min}]\n"
+        info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
+        info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
         return info
     }
 

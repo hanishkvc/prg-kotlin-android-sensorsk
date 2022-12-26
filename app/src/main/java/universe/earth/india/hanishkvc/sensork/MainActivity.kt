@@ -87,8 +87,10 @@ fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?)
                 for (item in sensorsMa.sensorsList) {
                     Button(
                         onClick = {
-                            sensorsMa.setSensor(item)
-                            mainActivity?.let { sensorsMa.monitorSensor(mainActivity) }
+                            if (sensorsMa.theSensor != item) {
+                                sensorsMa.setSensor(item)
+                                mainActivity?.let { sensorsMa.monitorSensor(mainActivity) }
+                            }
                             updateStatusCounter += 1
                         },
                     ) {
