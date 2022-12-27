@@ -67,6 +67,23 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
 }
 
+fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorMa, selSensor: Sensor?) {
+    if (selSensor == null) return
+    if (sensorsMa.theSensor != selSensor) {
+        mainActivity?.let {
+            if (!mainActivity.bMultipleSensors) {
+                Toast.makeText(mainActivity, "Removing sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
+                sensorsMa.monitorRemoveSensor(mainActivity)
+            }
+        }
+        sensorsMa.setSensor(selSensor)
+        mainActivity?.let {
+            sensorsMa.monitorAddSensor(mainActivity)
+            Toast.makeText(mainActivity, "Added sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
 @Composable
 fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?) {
     var updateStatusCounter by remember {
@@ -93,19 +110,7 @@ fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?)
                 for (item in sensorsMa.sensorsList) {
                     Button(
                         onClick = {
-                            if (sensorsMa.theSensor != item) {
-                                mainActivity?.let {
-                                    if (!mainActivity.bMultipleSensors) {
-                                        Toast.makeText(mainActivity, "Removing sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
-                                        sensorsMa.monitorRemoveSensor(mainActivity)
-                                    }
-                                }
-                                sensorsMa.setSensor(item)
-                                mainActivity?.let {
-                                    sensorsMa.monitorAddSensor(mainActivity)
-                                    Toast.makeText(mainActivity, "Added sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            handleSensorSelection(mainActivity, sensorsMa, item)
                             updateStatusCounter += 1
                         },
                     ) {
