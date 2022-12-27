@@ -6,6 +6,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -91,11 +92,15 @@ fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?)
                             if (sensorsMa.theSensor != item) {
                                 mainActivity?.let {
                                     if (!mainActivity.bMultipleSensors) {
+                                        Toast.makeText(mainActivity, "Removing sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
                                         sensorsMa.monitorRemoveSensor(mainActivity)
                                     }
                                 }
                                 sensorsMa.setSensor(item)
-                                mainActivity?.let { sensorsMa.monitorAddSensor(mainActivity) }
+                                mainActivity?.let {
+                                    sensorsMa.monitorAddSensor(mainActivity)
+                                    Toast.makeText(mainActivity, "Added sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
+                                }
                             }
                             updateStatusCounter += 1
                         },
