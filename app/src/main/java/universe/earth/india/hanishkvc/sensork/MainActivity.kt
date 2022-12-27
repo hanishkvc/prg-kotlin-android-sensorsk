@@ -34,16 +34,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sensorMa = SensorMa(Sensor.TYPE_ALL)
-        sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
-        setContent {
-            SensorKTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    MainContent("Sensors", sensorMa, this)
-                }
-            }
-        }
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -54,6 +44,20 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
         Log.i(TAG, "onAccuracyChanged: ")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        sensorMa = SensorMa(Sensor.TYPE_ALL)
+        sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
+        setContent {
+            SensorKTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+                    MainContent("Sensors", sensorMa, this)
+                }
+            }
+        }
     }
 
     override fun onPause() {
