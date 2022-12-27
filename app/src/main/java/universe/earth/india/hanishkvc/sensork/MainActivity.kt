@@ -65,6 +65,29 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         sensorMa.monitorStopAll(this)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //TODO: No need for safe call wrt outState
+        outState?.run {
+            sensorMa?.theSensor?.let {
+                this.putString("sensor_name", it.name)
+            }
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val sensorName = savedInstanceState.getString("sensor_name") ?: return
+        if (sensorMa == null) return
+        var selSensor: Sensor? = null
+        for (curSensor in sensorMa.sensorsList) {
+            if (curSensor.name == sensorName) {
+                selSensor = curSensor
+            }
+        }
+        handleSensorSelection(this, sensorMa, selSensor)
+    }
+
 }
 
 fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorMa, selSensor: Sensor?) {
