@@ -47,11 +47,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         refreshMe = mutableStateOf(0)
         sensorMa = SensorMa(Sensor.TYPE_ALL)
         sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
-        val fPath = Path(filesDir.absolutePath,"test.csv")
-        val fAPath = fPath.absolutePathString()
-        Log.i(TAG, "Save events to $fAPath")
-        lifecycleScope.launch(Dispatchers.IO) {
-            sensorMa.save_events(fAPath)
+        getExternalFilesDir(null)?.let {
+            val fPath = Path(it.absolutePath,"events.csv.txt")
+            val fAPath = fPath.absolutePathString()
+            Log.i(TAG, "Save events to $fAPath")
+            Toast.makeText(this, "SaveEventsTo: $fAPath", Toast.LENGTH_SHORT)
+            lifecycleScope.launch(Dispatchers.IO) {
+                sensorMa.save_events(fAPath)
+            }
         }
     }
 
