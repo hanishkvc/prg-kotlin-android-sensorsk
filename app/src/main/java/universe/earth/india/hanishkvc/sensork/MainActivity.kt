@@ -25,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
+import java.util.*
+import kotlin.concurrent.*
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
@@ -33,6 +35,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     val bMultipleSensors: Boolean = false
     lateinit var sensorMa: SensorMa
     lateinit var refreshMe: MutableState<Int>
+    var timerTask: TimerTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,6 +123,11 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorMa, selS
         mainActivity?.let {
             sensorsMa.monitorAddSensor(mainActivity)
             Toast.makeText(mainActivity, "Added sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
+            if (it.timerTask == null) {
+                it.timerTask = Timer().schedule(5000,5000) {
+                    it.refreshMe.value += 1
+                }
+            }
         }
     }
 }
