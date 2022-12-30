@@ -4,6 +4,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.math.absoluteValue
 
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
@@ -32,6 +36,7 @@ class SensorMa(private val sensorsType: Int) {
     var sensorsList: ArrayList<Sensor> = arrayListOf()
     var theSensor: Sensor? = null
     private var eventLog = arrayListOf<String>()
+    var savedUpTo: Int = 0
     private var ef0: FDataStats = FDataStats()
     private var ef1: FDataStats = FDataStats()
     private var ef2: FDataStats = FDataStats()
@@ -123,6 +128,26 @@ class SensorMa(private val sensorsType: Int) {
         info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
         info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
         return info
+    }
+
+    suspend fun save_events(fpath: String) {
+        withContext(Dispatchers.IO) {
+            val fSave = File(fpath)
+            while (true) {
+                delay(5000)
+                var saveLog = false
+                if (savedUpTo < (eventLog.size - 1000)) {
+                    saveLog = true
+                }
+                if (saveLog) {
+                    val newUpTo = eventLog.size
+                    for (i in savedUpTo..newUpTo) {
+                        fSave.appendText(eventLog[i])
+                    }
+                    savedUpTo = newUpTo
+                }
+            }
+        }
     }
 
 }

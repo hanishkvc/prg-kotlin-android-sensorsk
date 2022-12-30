@@ -24,9 +24,12 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.util.*
-import kotlin.concurrent.*
+import kotlin.concurrent.schedule
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
@@ -42,6 +45,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         refreshMe = mutableStateOf(0)
         sensorMa = SensorMa(Sensor.TYPE_ALL)
         sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
+        lifecycleScope.launch(Dispatchers.IO) {
+            sensorMa.save_events("/tmp/test.csv")
+        }
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
