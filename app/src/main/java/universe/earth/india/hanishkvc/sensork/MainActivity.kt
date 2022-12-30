@@ -32,9 +32,11 @@ const val HEADING_SENSORS = "Sensors"
 class MainActivity : ComponentActivity(), SensorEventListener {
     val bMultipleSensors: Boolean = false
     lateinit var sensorMa: SensorMa
+    lateinit var refreshMe: MutableState<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        refreshMe = mutableStateOf(0)
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -55,7 +57,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             SensorKTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    MainContent(HEADING_SENSORS, sensorMa, this)
+                    DrawMainContent(HEADING_SENSORS, sensorMa, this, refreshMe)
                 }
             }
         }
@@ -68,13 +70,21 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        Log.w(TAG, "OnSaveInstanceState called")
         sensorMa.theSensor?.let {
             outState.putString("sensor_name", it.name)
+            Log.w(TAG, "OnSaveInstanceState: Saving ${it.name}")
         }
+    }
+
+    @Composable
+    fun refreshGUI() {
+        currentComposer.composition.recompose()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
+        Log.w(TAG, "OnRestoreInstanceState called")
         val sensorName = savedInstanceState.getString("sensor_name") ?: return
         var selSensor: Sensor? = null
         for (curSensor in sensorMa.sensorsList) {
@@ -82,7 +92,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 selSensor = curSensor
             }
         }
-        handleSensorSelection(this, sensorMa, selSensor)
+        selSensor?.let {
+            handleSensorSelection(this, sensorMa, selSensor)
+            refreshMe.value += 1
+            Log.i(TAG, "Restoring: Previously selected sensor $selSensor")
+        }
     }
 
 }
@@ -105,7 +119,22 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorMa, selS
 }
 
 @Composable
-fun MainContent(name: String, sensorsMa: SensorMa?, mainActivity: MainActivity?) {
+fun DrawMainContent(
+    name: String,
+    sensorsMa: SensorMa?,
+    mainActivity: MainActivity?,
+    refreshMe: MutableState<Int>
+) {
+    if (refreshMe.value < 0) return
+    MainContent(name, sensorsMa, mainActivity)
+}
+
+@Composable
+fun MainContent(
+    name: String,
+    sensorsMa: SensorMa?,
+    mainActivity: MainActivity?,
+) {
     var updateStatusCounter by remember {
         mutableStateOf( 0 )
     }
