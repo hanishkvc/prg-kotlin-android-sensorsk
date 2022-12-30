@@ -142,7 +142,7 @@ class SensorMa(private val sensorsType: Int) {
                 if (saveLog) {
                     val newUpTo = eventLog.size
                     for (i in savedUpTo..newUpTo) {
-                        fSave.appendText(eventLog[i])
+                        fSave.appendText(eventLog[i]+"\n")
                     }
                     savedUpTo = newUpTo
                 }
