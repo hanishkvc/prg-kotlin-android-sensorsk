@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onStart() {
         super.onStart()
+        Log.w(TAG, "OnStart called")
         sensorMa = SensorMa(Sensor.TYPE_ALL)
         sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
         setContent {
@@ -82,9 +83,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         currentComposer.composition.recompose()
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        Log.w(TAG, "OnRestoreInstanceState called")
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        Log.w(TAG, "OnRestoreInstanceState called $savedInstanceState")
+        savedInstanceState ?: return
         val sensorName = savedInstanceState.getString("sensor_name") ?: return
         var selSensor: Sensor? = null
         for (curSensor in sensorMa.sensorsList) {
