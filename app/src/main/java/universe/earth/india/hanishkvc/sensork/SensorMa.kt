@@ -7,6 +7,8 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.io.File
 import kotlin.math.absoluteValue
 
@@ -35,8 +37,9 @@ class SensorMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
     var theSensor: Sensor? = null
+    private var elMutex: Mutex = Mutex()
     private var eventLog = arrayListOf<String>()
-    var savedUpTo: Int = 0
+    private var savedUpTo: Int = 0
     private var ef0: FDataStats = FDataStats()
     private var ef1: FDataStats = FDataStats()
     private var ef2: FDataStats = FDataStats()
@@ -97,7 +100,7 @@ class SensorMa(private val sensorsType: Int) {
         Log.i(TAG, "SensorMA: Removing all Listeners")
     }
 
-    fun sensorEvent(se: SensorEvent): String {
+    suspend fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
         var sData = "$sName ${se.timestamp}"
         for ((i,f) in se.values.withIndex()) {
@@ -108,7 +111,7 @@ class SensorMa(private val sensorsType: Int) {
             }
             sData += " $f"
         }
-        eventLog.add(sData)
+        elMutex.withLock { eventLog.add(sData) }
         return sData
     }
 
@@ -144,7 +147,12 @@ class SensorMa(private val sensorsType: Int) {
                     for (i in savedUpTo..newUpTo) {
                         fSave.appendText(eventLog[i]+"\n")
                     }
-                    savedUpTo = newUpTo
+                    elMutex.withLock {
+                        for(i in 0 .. newUpTo) {
+                            eventLog.removeAt(0)
+                        }
+                    }
+                    savedUpTo = 0
                 }
             }
         }

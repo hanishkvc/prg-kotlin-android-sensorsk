@@ -60,8 +60,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onSensorChanged(se: SensorEvent?) {
         se ?: return
-        val sData = sensorMa.sensorEvent(se)
-        Log.i(TAG, "onSensorChanged: $sData")
+        lifecycleScope.launch() {
+            val sData = sensorMa.sensorEvent(se)
+            Log.i(TAG, "onSensorChanged: $sData")
+        }
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
