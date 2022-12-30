@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.io.path.Path
+import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
@@ -45,8 +47,11 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         refreshMe = mutableStateOf(0)
         sensorMa = SensorMa(Sensor.TYPE_ALL)
         sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
+        val fPath = Path(filesDir.absolutePath,"test.csv")
+        val fAPath = fPath.absolutePathString()
+        Log.i(TAG, "Save events to $fAPath")
         lifecycleScope.launch(Dispatchers.IO) {
-            sensorMa.save_events("/tmp/test.csv")
+            sensorMa.save_events(fAPath)
         }
     }
 
