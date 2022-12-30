@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 
 const val TAG = "SensorK"
+const val HEADING_SENSORS = "Sensors"
 
 class MainActivity : ComponentActivity(), SensorEventListener {
     val bMultipleSensors: Boolean = false
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             SensorKTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    MainContent("Sensors", sensorMa, this)
+                    MainContent(HEADING_SENSORS, sensorMa, this)
                 }
             }
         }
@@ -67,18 +68,14 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        //TODO: No need for safe call wrt outState
-        outState?.run {
-            sensorMa?.theSensor?.let {
-                this.putString("sensor_name", it.name)
-            }
+        sensorMa.theSensor?.let {
+            outState.putString("sensor_name", it.name)
         }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         val sensorName = savedInstanceState.getString("sensor_name") ?: return
-        if (sensorMa == null) return
         var selSensor: Sensor? = null
         for (curSensor in sensorMa.sensorsList) {
             if (curSensor.name == sensorName) {
