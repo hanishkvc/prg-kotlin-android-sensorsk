@@ -37,6 +37,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         refreshMe = mutableStateOf(0)
+        sensorMa = SensorMa(Sensor.TYPE_ALL)
+        sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -52,8 +54,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     override fun onStart() {
         super.onStart()
         Log.w(TAG, "OnStart called")
-        sensorMa = SensorMa(Sensor.TYPE_ALL)
-        sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
+        sensorMa.theSensor?.let {
+            sensorMa.monitorAddSensor(this)
+        }
         setContent {
             SensorKTheme {
                 // A surface container using the 'background' color from the theme
@@ -64,8 +67,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
+        Log.w(TAG, "OnStop called")
         sensorMa.monitorStopAll(this)
     }
 
