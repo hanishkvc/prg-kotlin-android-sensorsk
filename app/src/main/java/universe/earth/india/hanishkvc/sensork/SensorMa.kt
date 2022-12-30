@@ -3,6 +3,7 @@ package universe.earth.india.hanishkvc.sensork
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import android.util.Log
 import kotlin.math.absoluteValue
 
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
@@ -63,7 +64,10 @@ class SensorMa(private val sensorsType: Int) {
      */
     fun monitorAddSensor(activity: MainActivity, sensor: Sensor? = null) {
         val addSensor = sensor ?: theSensor
-        addSensor?.let { sensorManager?.registerListener(activity, addSensor, SensorManager.SENSOR_DELAY_NORMAL) }
+        addSensor?.let {
+            sensorManager?.registerListener(activity, addSensor, SensorManager.SENSOR_DELAY_NORMAL)
+            Log.i(TAG, "SensorMA: Adding Listener for ${it.name}")
+        }
     }
 
     /**
@@ -71,7 +75,10 @@ class SensorMa(private val sensorsType: Int) {
      */
     fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
         val remSensor = sensor ?: theSensor
-        remSensor?.let { sensorManager?.unregisterListener(activity, remSensor) }
+        remSensor?.let {
+            sensorManager?.unregisterListener(activity, remSensor)
+            Log.i(TAG, "SensorMA: Removing Listener for ${it.name}")
+        }
     }
 
     /**
@@ -82,6 +89,7 @@ class SensorMa(private val sensorsType: Int) {
      */
     fun monitorStopAll(activity: MainActivity) {
         sensorManager?.unregisterListener(activity)
+        Log.i(TAG, "SensorMA: Removing all Listeners")
     }
 
     fun sensorEvent(se: SensorEvent): String {
