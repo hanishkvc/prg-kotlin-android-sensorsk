@@ -131,8 +131,10 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     }
 
     override fun onLocationChanged(location: Location) {
-        val msg = sensorMa.locationMa.locationEvent(location)
-        Log.i(TAG, "LocationChanged: $msg")
+        lifecycleScope.launch {
+            val msg = sensorMa.locationMa.locationEvent(location)
+            Log.i(TAG, "LocationChanged: $msg")
+        }
     }
 
 }

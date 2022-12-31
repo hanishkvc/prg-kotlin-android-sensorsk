@@ -43,6 +43,7 @@ class LocationMa {
     private var permissionOk: Boolean = false
     private var locationManager: LocationManager? = null
     var locationLog = arrayListOf<String>()
+    var mutex = Mutex()
 
     fun checkPermissionStatus(mainActivity: MainActivity) {
         val locPerm = mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -71,9 +72,11 @@ class LocationMa {
         }
     }
 
-    fun locationEvent(location: Location): String {
+    suspend fun locationEvent(location: Location): String {
         val sData = "GpsProvider ${location.time} ${location.latitude} ${location.longitude} ${location.altitude}"
-        locationLog.add(sData)
+        mutex.withLock {
+            locationLog.add(sData)
+        }
         return sData
     }
 
