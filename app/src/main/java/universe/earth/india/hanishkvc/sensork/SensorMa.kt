@@ -81,6 +81,20 @@ class LocationMa {
         return sData
     }
 
+    suspend fun getTextDataAndClear(): String {
+        var sData = ""
+        val numEntries = locationLog.size
+        for(i in 0 until numEntries) {
+            sData += "${locationLog[i]}\n"
+        }
+        mutex.withLock {
+            for(i in 0 until numEntries) {
+                locationLog.removeAt(0)
+            }
+        }
+        return sData
+    }
+
 }
 
 class SensorMa(private val sensorsType: Int) {
