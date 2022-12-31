@@ -178,6 +178,10 @@ class SensorMa(private val sensorsType: Int) {
         info += "\tDMin [${ef0.min}, ${ef1.min}, ${ef2.min}]\n"
         info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
         info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
+        info += "\n"
+        if (locationMa.locationLog.size > 0) {
+            info += "\tLoc [${locationMa.locationLog.last()}]\n"
+        }
         return info
     }
 

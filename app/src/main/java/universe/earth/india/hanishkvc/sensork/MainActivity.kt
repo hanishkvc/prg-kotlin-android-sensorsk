@@ -193,7 +193,7 @@ fun MainContent(
             Column(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                    .weight(0.6F, true)
+                    .weight(0.5F, true)
                     .verticalScroll(rememberScrollState())
                     .fillMaxWidth()
             ) {
@@ -211,7 +211,7 @@ fun MainContent(
         }
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
-            sensorsMa?.status()?.let { Text(text = it, modifier = Modifier.weight(0.4f)) }
+            sensorsMa?.status()?.let { Text(text = it, modifier = Modifier.weight(0.5f)) }
         }
     }
 }
