@@ -224,6 +224,8 @@ class SensorMa(private val sensorsType: Int) {
                     }
                     savedUpTo = 0
                 }
+                val sLocationData = locationMa.getTextDataAndClear()
+                fSave.appendText(sLocationData)
             }
         }
     }
