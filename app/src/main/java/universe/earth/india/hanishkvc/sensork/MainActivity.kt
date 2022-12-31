@@ -1,11 +1,11 @@
 package universe.earth.india.hanishkvc.sensork
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.Location
+import android.location.LocationListener
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -41,7 +41,7 @@ import kotlin.io.path.absolutePathString
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
 
-class MainActivity : ComponentActivity(), SensorEventListener {
+class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
     val bMultipleSensors: Boolean = false
     lateinit var sensorMa: SensorMa
     lateinit var refreshMe: MutableState<Int>
@@ -64,12 +64,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             }
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        val locPerm = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-        if (locPerm == PackageManager.PERMISSION_GRANTED) {
-            sensorMa.locationMa.permissionStatus(true)
-        } else {
-            sensorMa.locationMa.permissionStatus(false)
-        }
+        sensorMa.locationMa.checkPermissionStatus(this)
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -136,6 +131,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             refreshMe.value += 1
             Log.i(TAG, "Restoring: Previously selected sensor $selSensor")
         }
+    }
+
+    override fun onLocationChanged(location: Location) {
+        TODO("Not yet implemented")
     }
 
 }

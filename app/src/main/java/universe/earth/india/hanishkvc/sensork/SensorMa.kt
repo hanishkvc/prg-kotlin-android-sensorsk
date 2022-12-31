@@ -1,9 +1,12 @@
 package universe.earth.india.hanishkvc.sensork
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import android.util.Log
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -36,8 +39,9 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
 class LocationMa {
     private var permissionOk: Boolean = false
 
-    fun permissionStatus(ok: Boolean) {
-        permissionOk = ok
+    fun checkPermissionStatus(mainActivity: MainActivity) {
+        val locPerm = mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        permissionOk = locPerm == PackageManager.PERMISSION_GRANTED
     }
 
 }
