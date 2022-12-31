@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         sensorMa.locationMa.checkPermissionStatus(this)
+        sensorMa.locationMa.requestLocations(this)
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -134,7 +135,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     }
 
     override fun onLocationChanged(location: Location) {
-        TODO("Not yet implemented")
+        Log.i(TAG, "LocationChanged: $location")
     }
 
 }

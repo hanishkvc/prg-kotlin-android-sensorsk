@@ -1,11 +1,14 @@
 package universe.earth.india.hanishkvc.sensork
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import android.location.LocationManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.PermissionChecker.checkSelfPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -38,10 +41,22 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
 
 class LocationMa {
     private var permissionOk: Boolean = false
+    private var locationManager: LocationManager? = null
 
     fun checkPermissionStatus(mainActivity: MainActivity) {
         val locPerm = mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
         permissionOk = locPerm == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun requestLocations(mainActivity: MainActivity) {
+        locationManager = mainActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        try {
+            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1.0F, mainActivity)
+        } catch (e: SecurityException) {
+            val msg = "LocationMa:GpsProvider:Failed location updates request"
+            Log.i(TAG, msg)
+            Toast.makeText(mainActivity, msg, Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
