@@ -43,7 +43,7 @@ const val HEADING_SENSORS = "Sensors"
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
     val bMultipleSensors: Boolean = false
-    lateinit var sensorMa: SensorMa
+    private lateinit var sensorMa: SensorMa
     lateinit var refreshMe: MutableState<Int>
     var timerTask: TimerTask? = null
 
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
     override fun onSensorChanged(se: SensorEvent?) {
         se ?: return
-        lifecycleScope.launch() {
+        lifecycleScope.launch {
             val sData = sensorMa.sensorEvent(se)
             Log.i(TAG, "onSensorChanged: $sData")
         }
@@ -109,11 +109,6 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
             outState.putString("sensor_name", it.name)
             Log.w(TAG, "OnSaveInstanceState: Saving ${it.name}")
         }
-    }
-
-    @Composable
-    fun refreshGUI() {
-        currentComposer.composition.recompose()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
