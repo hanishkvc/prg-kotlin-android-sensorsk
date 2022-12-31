@@ -100,6 +100,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         super.onStop()
         Log.w(TAG, "OnStop called")
         sensorMa.monitorStopAll(this)
+        sensorMa.locationMa.cancelLocations(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -130,7 +131,8 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     }
 
     override fun onLocationChanged(location: Location) {
-        Log.i(TAG, "LocationChanged: $location")
+        val msg = sensorMa.locationMa.locationEvent(location)
+        Log.i(TAG, "LocationChanged: $msg")
     }
 
 }

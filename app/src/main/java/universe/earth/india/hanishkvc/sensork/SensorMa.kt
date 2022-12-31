@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorManager
+import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
@@ -42,6 +43,7 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
 class LocationMa {
     private var permissionOk: Boolean = false
     private var locationManager: LocationManager? = null
+    var locationLog = arrayListOf<String>()
 
     fun checkPermissionStatus(mainActivity: MainActivity) {
         val locPerm = mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -50,13 +52,30 @@ class LocationMa {
 
     fun requestLocations(mainActivity: MainActivity) {
         locationManager = mainActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        try {
-            locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1.0F, mainActivity)
-        } catch (e: SecurityException) {
-            val msg = "LocationMa:GpsProvider:Failed location updates request"
-            Log.i(TAG, msg)
-            Toast.makeText(mainActivity, msg, Toast.LENGTH_SHORT).show()
+        var msg = "LocationMa:Not Ok"
+        locationManager?.let {
+            try {
+                it.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1.0F, mainActivity)
+                msg = "LocationMa:GpsProvider:Success: location updates request"
+            } catch (e: SecurityException) {
+                msg = "LocationMa:GpsProvider:Failed: location updates request"
+            }
         }
+        Log.i(TAG, msg)
+        Toast.makeText(mainActivity, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    fun cancelLocations(mainActivity: MainActivity) {
+        locationManager?.let {
+            it.removeUpdates(mainActivity)
+            Log.i(TAG, "LocationMa:GpsProvider: stop location updates")
+        }
+    }
+
+    fun locationEvent(location: Location): String {
+        val sData = "GpsProvider ${location.time} ${location.latitude} ${location.longitude} ${location.altitude}"
+        locationLog.add(sData)
+        return sData
     }
 
 }
