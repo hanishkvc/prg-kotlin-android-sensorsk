@@ -33,6 +33,15 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
 
 }
 
+class LocationMa {
+    private var permissionOk: Boolean = false
+
+    fun permissionStatus(ok: Boolean) {
+        permissionOk = ok
+    }
+
+}
+
 class SensorMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
@@ -43,6 +52,7 @@ class SensorMa(private val sensorsType: Int) {
     private var ef0: FDataStats = FDataStats()
     private var ef1: FDataStats = FDataStats()
     private var ef2: FDataStats = FDataStats()
+    var locationMa: LocationMa = LocationMa()
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {

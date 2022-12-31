@@ -1,5 +1,7 @@
 package universe.earth.india.hanishkvc.sensork
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -56,12 +58,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             val fPath = Path(it.absolutePath,"events.$fileId.csv.txt")
             val fAPath = fPath.absolutePathString()
             Log.i(TAG, "Save events to $fAPath")
-            Toast.makeText(this, "SaveEventsTo: $fAPath", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "SaveEventsTo: $fAPath", Toast.LENGTH_SHORT).show()
             lifecycleScope.launch(Dispatchers.IO) {
                 sensorMa.save_events(fAPath)
             }
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val locPerm = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (locPerm == PackageManager.PERMISSION_GRANTED) {
+            sensorMa.locationMa.permissionStatus(true)
+        } else {
+            sensorMa.locationMa.permissionStatus(false)
+        }
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
