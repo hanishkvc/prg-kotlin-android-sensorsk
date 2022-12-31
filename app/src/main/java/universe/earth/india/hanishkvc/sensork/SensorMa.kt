@@ -43,7 +43,7 @@ class LocationMa {
     private var permissionOk: Boolean = false
     private var locationManager: LocationManager? = null
     var locationLog = arrayListOf<String>()
-    var mutex = Mutex()
+    private var mutex = Mutex()
 
     fun checkPermissionStatus(mainActivity: MainActivity) {
         val locPerm = mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -77,6 +77,7 @@ class LocationMa {
         mutex.withLock {
             locationLog.add(sData)
         }
+        Log.i(TAG, "LocationEvent: $sData")
         return sData
     }
 
@@ -162,6 +163,7 @@ class SensorMa(private val sensorsType: Int) {
             sData += " $f"
         }
         elMutex.withLock { eventLog.add(sData) }
+        Log.i(TAG, "SensorEvent: $sData")
         return sData
     }
 

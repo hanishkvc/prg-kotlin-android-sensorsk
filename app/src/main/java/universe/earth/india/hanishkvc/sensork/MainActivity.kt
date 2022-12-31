@@ -71,8 +71,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     override fun onSensorChanged(se: SensorEvent?) {
         se ?: return
         lifecycleScope.launch {
-            val sData = sensorMa.sensorEvent(se)
-            Log.i(TAG, "onSensorChanged: $sData")
+            sensorMa.sensorEvent(se)
         }
     }
 
@@ -132,8 +131,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
     override fun onLocationChanged(location: Location) {
         lifecycleScope.launch {
-            val msg = sensorMa.locationMa.locationEvent(location)
-            Log.i(TAG, "LocationChanged: $msg")
+            sensorMa.locationMa.locationEvent(location)
         }
     }
 
