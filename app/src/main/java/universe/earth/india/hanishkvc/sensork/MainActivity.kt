@@ -29,6 +29,8 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.io.path.Path
@@ -48,8 +50,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         refreshMe = mutableStateOf(0)
         sensorMa = SensorMa(Sensor.TYPE_ALL)
         sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
+        val curDateTime = LocalDateTime.now()
+        val fileId = DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(curDateTime)
         getExternalFilesDir(null)?.let {
-            val fPath = Path(it.absolutePath,"events.csv.txt")
+            val fPath = Path(it.absolutePath,"events.$fileId.csv.txt")
             val fAPath = fPath.absolutePathString()
             Log.i(TAG, "Save events to $fAPath")
             Toast.makeText(this, "SaveEventsTo: $fAPath", Toast.LENGTH_SHORT)
