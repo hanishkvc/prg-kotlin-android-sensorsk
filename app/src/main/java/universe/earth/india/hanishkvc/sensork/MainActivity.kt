@@ -10,6 +10,9 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -194,10 +198,23 @@ fun MainContent(
             ) {
                 for (item in sensorsMa.sensorsList) {
                     Button(
-                        onClick = {
-                            handleSensorSelection(mainActivity, sensorsMa, item)
-                            updateStatusCounter += 1
+                        modifier = Modifier.pointerInput(Unit) {
+                           detectTapGestures (
+                               onDoubleTap = {
+                                   handleSensorSelection(mainActivity, sensorsMa, item)
+                                   updateStatusCounter += 1
+                               }
+                           )
                         },
+                        /*
+                        modifier = Modifier.combinedClickable (
+                            onDoubleClick = {
+                                handleSensorSelection(mainActivity, sensorsMa, item)
+                                updateStatusCounter += 1
+                            }
+                        )
+                         */
+                        onClick = { }
                     ) {
                         Text(text=item.name)
                     }
