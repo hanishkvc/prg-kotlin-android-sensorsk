@@ -10,12 +10,11 @@ import android.location.Location
 import android.location.LocationManager
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.math.absoluteValue
 
