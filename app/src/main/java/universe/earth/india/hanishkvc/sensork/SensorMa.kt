@@ -144,11 +144,11 @@ class SensorMa(private val sensorsType: Int) {
                 }
                 if (saveLog) {
                     val newUpTo = eventLog.size
-                    for (i in savedUpTo..newUpTo) {
+                    for (i in savedUpTo until newUpTo) {
                         fSave.appendText(eventLog[i]+"\n")
                     }
                     elMutex.withLock {
-                        for(i in 0 .. newUpTo) {
+                        for(i in 0 until newUpTo) {
                             eventLog.removeAt(0)
                         }
                     }
