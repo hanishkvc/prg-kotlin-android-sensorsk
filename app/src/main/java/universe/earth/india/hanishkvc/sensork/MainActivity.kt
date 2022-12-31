@@ -5,6 +5,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.PowerManager
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
@@ -42,6 +43,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     lateinit var sensorMa: SensorMa
     lateinit var refreshMe: MutableState<Int>
     var timerTask: TimerTask? = null
+    lateinit var wakeLock: PowerManager.WakeLock
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +59,10 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 sensorMa.save_events(fAPath)
             }
         }
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        //window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SensorK:")
+        wakeLock.acquire()
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -92,6 +97,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         super.onStop()
         Log.w(TAG, "OnStop called")
         sensorMa.monitorStopAll(this)
+        wakeLock.release()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
