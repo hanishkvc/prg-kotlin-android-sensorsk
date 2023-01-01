@@ -25,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -151,36 +154,55 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
     }
 }
 
+fun testCanvasDraw(ds: DrawScope) {
+    val yMid = 0F
+    with(ds) {
+        drawLine(Color.Red, start=Offset(0F,yMid), end=Offset(10F,yMid+200))
+        drawLine(Color.Red, start=Offset(10F,yMid+200), end=Offset(20F,yMid-300))
+        drawLine(Color.Red, start=Offset(20F,yMid-300), end=Offset(30F,yMid+100))
+        drawLine(Color.Red, start=Offset(30F,yMid+100), end=Offset(40F,yMid-200))
+
+        drawLine(Color.Red, start=Offset(100F,yMid), end=Offset(100F,yMid+200))
+        drawLine(Color.Red, start=Offset(110F,yMid), end=Offset(110F,yMid-300))
+        drawLine(Color.Red, start=Offset(200F,yMid), end=Offset(200F,yMid+100))
+        drawLine(Color.Red, start=Offset(300F,yMid), end=Offset(300F,yMid-200))
+    }
+}
+
 @Composable
-fun PlotData(sensorsMa: SensorsMa) {
-    if (sensorsMa.sensorMa == null) return
-    Canvas(modifier = Modifier.fillMaxSize()) {
+fun PlotData(sensorsMa: SensorsMa?) {
+    val vCheck = sensorsMa?.sensorMa ?: return
+    Canvas(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Log.i(TAG, "Canvas: $size")
         val canvasHeight = size.height
-        val yMid = canvasHeight/2
-        for((i,fva) in sensorsMa.sensorMa!!.eventFLog.withIndex()) {
-            val fx = i.toFloat()*2
-            val fy = yMid + (fva[0]*30)
-            if ((i%50) == 0) {
-                var sData = ""
-                for(j in 0 until fva.size) {
-                    sData += "${fva[j]} "
+        val yMid = canvasHeight/2F
+        var min = Float.POSITIVE_INFINITY
+        var max = Float.NEGATIVE_INFINITY
+        withTransform({
+            translate(top = yMid)
+        }) {
+            for((i,fva) in sensorsMa.sensorMa!!.eventFLog.withIndex()) {
+                val fx = i.toFloat()
+                val fy = fva[0]*30
+                if (min > fy) {
+                    min = fy
                 }
-                Log.i(TAG, "Plot:$fx, $fy, $sData")
+                if (max < fy) {
+                    max = fy
+                }
+                if ((i%50) == 0) {
+                    var sData = ""
+                    for(fv in fva) {
+                        sData += "$fv "
+                    }
+                    Log.i(TAG, "Plot:$fx, $fy ($min, $max), $sData")
+                }
+                drawLine(Color.Blue, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy))
             }
-            drawLine(Color.Blue, start = Offset(x=fx, y=yMid), end = Offset(x=fx, y=fy))
+            testCanvasDraw(ds = this)
         }
-        /*
-        drawLine(Color.Blue, start=Offset(0F,yMid), end=Offset(10F,yMid+200))
-        drawLine(Color.Blue, start=Offset(10F,yMid+200), end=Offset(20F,yMid-300))
-        drawLine(Color.Blue, start=Offset(20F,yMid-300), end=Offset(30F,yMid+100))
-        drawLine(Color.Blue, start=Offset(30F,yMid+100), end=Offset(40F,yMid-200))
-
-        drawLine(Color.Blue, start=Offset(0F,yMid), end=Offset(0F,yMid+200))
-        drawLine(Color.Blue, start=Offset(10F,yMid), end=Offset(10F,yMid-300))
-        drawLine(Color.Blue, start=Offset(20F,yMid), end=Offset(20F,yMid+100))
-        drawLine(Color.Blue, start=Offset(30F,yMid), end=Offset(30F,yMid-200))
-         */
     }
 }
 
@@ -236,9 +258,14 @@ fun MainContent(
         }
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
+            PlotData(sensorsMa)
             sensorsMa?.status()?.let {
-                PlotData(sensorsMa)
-                Text(text = it, modifier = Modifier.weight(0.33f).verticalScroll(rememberScrollState()))
+                Text(
+                    text = it,
+                    modifier = Modifier
+                        .weight(0.33f)
+                        .verticalScroll(rememberScrollState())
+                )
             }
         }
     }
