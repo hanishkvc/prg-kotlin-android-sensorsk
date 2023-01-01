@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
             Log.i(TAG, "Save events to $fAPath")
             Toast.makeText(this, "SaveEventsTo: $fAPath", Toast.LENGTH_SHORT).show()
             lifecycleScope.launch(Dispatchers.IO) {
-                sensorsMa.save_events(fAPath)
+                sensorsMa.saveEventsLoop(fAPath)
             }
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

@@ -259,19 +259,23 @@ class SensorsMa(private val sensorsType: Int) {
         return info
     }
 
-    suspend fun save_events(fpath: String) {
+    private suspend fun saveEvents(fSave: File) {
+        sensorMa?.let {
+            val sSensorData = it.getTextDataAndClear()
+            if (sSensorData.isNotEmpty()) {
+                fSave.appendText(sSensorData)
+            }
+        }
+        val sLocationData = locationMa.getTextDataAndClear()
+        fSave.appendText(sLocationData)
+    }
+
+    suspend fun saveEventsLoop(fPath: String) {
         withContext(Dispatchers.IO) {
-            val fSave = File(fpath)
+            val fSave = File(fPath)
             while (true) {
                 delay(5000)
-                sensorMa?.let {
-                    val sSensorData = it.getTextDataAndClear()
-                    if (sSensorData.isNotEmpty()) {
-                        fSave.appendText(sSensorData)
-                    }
-                }
-                val sLocationData = locationMa.getTextDataAndClear()
-                fSave.appendText(sLocationData)
+                saveEvents(fSave)
             }
         }
     }
