@@ -73,8 +73,9 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         sensorsMa.locationMa.checkPermissionStatus(this)
         sensorsMa.locationMa.requestLocations(this)
+        val mainActivity = this
         onBackPressedDispatcher.addCallback(this) {
-            sensorsMa.sensorMa = null
+            sensorsMa.clearSensorMa(mainActivity)
             refreshMe.value += 1
         }
     }
@@ -150,7 +151,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
 fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, selSensor: Sensor?) {
     if (selSensor == null) return
-    sensorsMa.setSensor(selSensor, mainActivity)
+    sensorsMa.setSensorMa(selSensor, mainActivity)
     mainActivity?.let {
         if (it.timerTask == null) {
             it.timerTask = Timer().schedule(REFRESHME_TIMER_MSEC, REFRESHME_TIMER_MSEC) {
