@@ -170,10 +170,10 @@ class SensorsMa(private val sensorsType: Int) {
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
         this.sensorManager = sensorManager
-        this.sensorManager.also { updateSensors() }
+        this.sensorManager.also { updateSensorsList() }
     }
 
-    private fun updateSensors() {
+    private fun updateSensorsList() {
         val sensorsListCheck = sensorManager?.getSensorList(this.sensorsType) ?: return
         for (sensor in sensorsListCheck) {
             if (sensor.isWakeUpSensor) {
