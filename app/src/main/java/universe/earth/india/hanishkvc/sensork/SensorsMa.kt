@@ -105,14 +105,15 @@ class LocationMa {
 
 }
 
+const val DIV_NANO2MILLI = 1000000
 class SensorMa(val theSensor: Sensor) {
     private var elMutex: Mutex = Mutex()
     private var eventLog = arrayListOf<String>()
     private var seValues = arrayListOf<FDataStats>()
-    private val bootEpochTime = System.currentTimeMillis() - (SystemClock.elapsedRealtimeNanos()/1000)
+    private val bootEpochTime = System.currentTimeMillis() - (SystemClock.elapsedRealtimeNanos()/DIV_NANO2MILLI)
 
     init {
-        Log.i(TAG, "SensorMa:Init: CurEpochTime:${System.currentTimeMillis()}, CurElapsedTime:${SystemClock.elapsedRealtimeNanos()/1000}")
+        Log.i(TAG, "SensorMa:Init: CurEpochTime:${System.currentTimeMillis()}, CurElapsedTime:${SystemClock.elapsedRealtimeNanos()/DIV_NANO2MILLI}")
         Log.i(TAG, "SensorMa:Init: BootEpochTime:$bootEpochTime")
     }
 
@@ -127,7 +128,7 @@ class SensorMa(val theSensor: Sensor) {
 
     suspend fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
-        val curEpochTime = bootEpochTime + (se.timestamp/1000)
+        val curEpochTime = bootEpochTime + (se.timestamp/DIV_NANO2MILLI)
         var sData = "$sName $curEpochTime"
         for ((i,f) in se.values.withIndex()) {
             seValuesUpdate(i, f)
