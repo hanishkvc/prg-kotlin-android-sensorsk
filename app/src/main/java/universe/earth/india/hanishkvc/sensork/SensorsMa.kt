@@ -107,19 +107,22 @@ class LocationMa {
 class SensorMa(val theSensor: Sensor) {
     private var elMutex: Mutex = Mutex()
     private var eventLog = arrayListOf<String>()
-    private var ef0: FDataStats = FDataStats()
-    private var ef1: FDataStats = FDataStats()
-    private var ef2: FDataStats = FDataStats()
+    private var seValues = arrayListOf<FDataStats>()
+
+    fun seValuesUpdate(index: Int, value: Float) {
+        if (index >= seValues.size) {
+            for(i in seValues.size until index+1) {
+                seValues.add(FDataStats())
+            }
+        }
+        seValues[index].update(value)
+    }
 
     suspend fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
         var sData = "$sName ${se.timestamp}"
         for ((i,f) in se.values.withIndex()) {
-            when(i) {
-                0 -> ef0.update(f)
-                1 -> ef1.update(f)
-                2 -> ef2.update(f)
-            }
+            seValuesUpdate(i, f)
             sData += " $f"
         }
         elMutex.withLock { eventLog.add(sData) }
@@ -135,10 +138,20 @@ class SensorMa(val theSensor: Sensor) {
         info += "\tpower [${theSensor.power}]\n"
         info += "\tvendor [${theSensor.vendor}], version [${theSensor.version}]\n"
         info += "\n"
-        info += "\tDMin [${ef0.min}, ${ef1.min}, ${ef2.min}]\n"
-        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]\n"
-        info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
-        info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
+        var sMin = "DMin"
+        var sAvg = "DAvg"
+        var sMax = "DMax"
+        var sCnt = "DCnt"
+        for(i in 0 until seValues.size) {
+            sMin += " ${seValues[i].min}"
+            sAvg += " ${seValues[i].avg()}"
+            sMax += " ${seValues[i].max}"
+            sCnt += " ${seValues[i].count}"
+        }
+        info += "\t$sMin\n"
+        info += "\t$sAvg\n"
+        info += "\t$sMax\n"
+        info += "\t$sCnt\n"
         return info
     }
 
