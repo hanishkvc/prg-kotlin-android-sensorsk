@@ -100,7 +100,6 @@ class LocationMa {
 class SensorMa(val theSensor: Sensor) {
     private var elMutex: Mutex = Mutex()
     private var eventLog = arrayListOf<String>()
-    private var savedUpTo: Int = 0
     private var ef0: FDataStats = FDataStats()
     private var ef1: FDataStats = FDataStats()
     private var ef2: FDataStats = FDataStats()
@@ -134,6 +133,23 @@ class SensorMa(val theSensor: Sensor) {
         info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
         info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
         return info
+    }
+
+    suspend fun getTextDataAndClear(): String {
+        if (eventLog.size < 1000) {
+            return ""
+        }
+        var sData = ""
+        val numEntries = eventLog.size
+        for(i in 0 until numEntries) {
+            sData += "${eventLog[i]}\n"
+        }
+        elMutex.withLock {
+            for(i in 0 until numEntries) {
+                eventLog.removeAt(0)
+            }
+        }
+        return sData
     }
 
 }
@@ -219,21 +235,11 @@ class SensorsMa(private val sensorsType: Int) {
             val fSave = File(fpath)
             while (true) {
                 delay(5000)
-                var saveLog = false
-                if (savedUpTo < (eventLog.size - 1000)) {
-                    saveLog = true
-                }
-                if (saveLog) {
-                    val newUpTo = eventLog.size
-                    for (i in savedUpTo until newUpTo) {
-                        fSave.appendText(eventLog[i]+"\n")
+                sensorMa?.let {
+                    val sSensorData = it.getTextDataAndClear()
+                    if (sSensorData.isNotEmpty()) {
+                        fSave.appendText(sSensorData)
                     }
-                    elMutex.withLock {
-                        for(i in 0 until newUpTo) {
-                            eventLog.removeAt(0)
-                        }
-                    }
-                    savedUpTo = 0
                 }
                 val sLocationData = locationMa.getTextDataAndClear()
                 fSave.appendText(sLocationData)
