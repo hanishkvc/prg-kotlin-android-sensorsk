@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import sys
 
 
+
 def _vector_info(vdata: pd.Series, tag):
     print("{}: min {}, avg {}, Max {}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
 
@@ -15,6 +16,8 @@ def vector_info(vdata: pd.Series, tag):
     _vector_info(vdata.array, tag)
     deltas = vdata.array[1:] - vdata.array[:-1]
     _vector_info(deltas, "{}-Deltas".format(tag))
+
+
 
 df = pd.read_csv(sys.argv[1], sep=' ', names=['sensor', 'time', 'x', 'y', 'z'])
 
@@ -31,10 +34,11 @@ for sensor in sensorsList:
     bdf = df[df['sensor'] == sensor]
     print(bdf)
     # Extract the fields in the data
-    dtime = bdf['time']
+    dt = bdf['time']
     dx = bdf['x']
     dy = bdf['y']
     dz = bdf['z']
+    vector_info(dt, "\tdt")
     vector_info(dx, "\tdx")
     vector_info(dy, "\tdy")
     vector_info(dz, "\tdz")
