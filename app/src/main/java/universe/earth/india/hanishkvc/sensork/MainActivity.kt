@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     override fun onSensorChanged(se: SensorEvent?) {
         se ?: return
         lifecycleScope.launch {
-            sensorsMa.sensorEvent(se)
+            sensorsMa.sensorMa?.sensorEvent(se)
         }
     }
 
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     override fun onStart() {
         super.onStart()
         Log.w(TAG, "OnStart called")
-        sensorsMa.theSensor?.let {
+        sensorsMa.sensorMa?.let {
             sensorsMa.monitorAddSensor(this)
         }
         setContent {
@@ -105,9 +105,9 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.w(TAG, "OnSaveInstanceState called")
-        sensorsMa.theSensor?.let {
-            outState.putString("sensor_name", it.name)
-            Log.w(TAG, "OnSaveInstanceState: Saving ${it.name}")
+        sensorsMa.sensorMa?.let {
+            outState.putString("sensor_name", it.theSensor.name)
+            Log.w(TAG, "OnSaveInstanceState: Saving ${it.theSensor.name}")
         }
     }
 
@@ -139,21 +139,23 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
 fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, selSensor: Sensor?) {
     if (selSensor == null) return
-    if (sensorsMa.theSensor != selSensor) {
-        mainActivity?.let {
-            if (!mainActivity.bMultipleSensors) {
-                Toast.makeText(mainActivity, "Removing sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
-                sensorsMa.monitorRemoveSensor(mainActivity)
+    sensorsMa.sensorMa?.let {
+        if (it.theSensor != selSensor) {
+            mainActivity?.let {
+                if (!mainActivity.bMultipleSensors) {
+                    Toast.makeText(mainActivity, "Removing sensor ${sensorsMa.sensorMa!!.theSensor.name}", Toast.LENGTH_SHORT).show()
+                    sensorsMa.monitorRemoveSensor(mainActivity)
+                }
             }
         }
-        sensorsMa.setSensor(selSensor)
-        mainActivity?.let {
-            sensorsMa.monitorAddSensor(mainActivity)
-            Toast.makeText(mainActivity, "Added sensor ${sensorsMa.theSensor?.name}", Toast.LENGTH_SHORT).show()
-            if (it.timerTask == null) {
-                it.timerTask = Timer().schedule(5000,5000) {
-                    it.refreshMe.value += 1
-                }
+    }
+    sensorsMa.setSensor(selSensor)
+    mainActivity?.let {
+        sensorsMa.monitorAddSensor(mainActivity)
+        Toast.makeText(mainActivity, "Added sensor ${sensorsMa.sensorMa!!.theSensor.name}", Toast.LENGTH_SHORT).show()
+        if (it.timerTask == null) {
+            it.timerTask = Timer().schedule(5000,5000) {
+                it.refreshMe.value += 1
             }
         }
     }
