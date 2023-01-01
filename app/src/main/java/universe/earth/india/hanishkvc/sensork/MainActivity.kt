@@ -175,31 +175,23 @@ fun PlotData(sensorsMa: SensorsMa?) {
         Log.i(TAG, "Canvas: $size")
         val canvasHeight = size.height
         val yMid = canvasHeight/2F
-        var min = Float.POSITIVE_INFINITY
-        var max = Float.NEGATIVE_INFINITY
         withTransform({
             scale(scaleX = 1F, scaleY = canvasHeight/100F)
             translate(top = yMid)
         }) {
             for((i,fva) in eventFLog.withIndex()) {
                 val fx = i.toFloat()
-                val fy = fva[0]
-                if (min > fy) {
-                    min = fy
-                }
-                if (max < fy) {
-                    max = fy
-                }
-                if ((i%50) == 0) {
-                    var sData = ""
-                    for(fv in fva) {
-                        sData += "$fv "
+                for((j,fy) in fva.withIndex()) {
+                    val color = when (j) {
+                        0 -> Color.Red
+                        1 -> Color.Green
+                        2 -> Color.Blue
+                        else -> Color.Black
                     }
-                    Log.i(TAG, "Plot:${eventFLog.size}: $fx, $fy ($min, $max), $sData")
+                    drawLine(color, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy), alpha = 0.5F)
                 }
-                drawLine(Color.Blue, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy))
             }
-            testCanvasDraw(ds = this)
+            //testCanvasDraw(ds = this)
         }
     }
 }
