@@ -10,23 +10,23 @@ import sys
 
 
 def _vector_info(vdata: pd.Series, tag):
-    print("{}: min {}, avg {}, Max {}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
+    print("{}: min {:24.8f}, avg {:24.8f}, Max {:24.8f}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
 
 def vector_info(vdata: pd.Series, tag):
-    _vector_info(vdata.array, tag)
+    _vector_info(vdata.array, "{}-RawDat".format(tag))
     deltas = vdata.array[1:] - vdata.array[:-1]
     _vector_info(deltas, "{}-Deltas".format(tag))
 
 
+FNSensor = 'sensor'
+FNTime = 'time'
+FNames = [ FNSensor, FNTime ]
+for i in range(14):
+    FNames.append("F{}".format(i))
 
-df = pd.read_csv(sys.argv[1], sep=' ', names=range(16))
-FiSensor = 0
-FiTime = 1
-FiX = 2
-FiY = 3
-FiZ = 4
+df = pd.read_csv(sys.argv[1], sep=' ', names=FNames)
 
-sensorsList = df[FiSensor].unique()
+sensorsList = df[FNSensor].unique()
 print("NumOfSensors:", sensorsList.size)
 print("Sensors:", sensorsList)
 
@@ -36,21 +36,22 @@ for sensor in sensorsList:
     print("\nPlotting:", sensor)
     axi += 1
     # Extract data belonging to current sensor
-    bdf = df[df[FiSensor] == sensor]
+    bdf = df[df[FNSensor] == sensor]
     print(bdf)
     # Extract the fields in the data
-    dt = bdf[FiTime]
-    dx = bdf[FiX]
-    dy = bdf[FiY]
-    dz = bdf[FiZ]
+    dt = bdf[FNTime]
+    dv = []
+    for i in range(2,16):
+        cv = bdf[FNames[i]]
+        if bdf[cv.notna()].size == 0:
+            break
+        dv.append(cv)
+    # Show info including Plot the fields relative to captured+saved sequence
     vector_info(dt, "\tdt")
-    vector_info(dx, "\tdx")
-    vector_info(dy, "\tdy")
-    vector_info(dz, "\tdz")
-    # Plot the fields relative to captured+saved sequence
-    ax[axi].plot(dx, label="x")
-    ax[axi].plot(dy, label="y")
-    ax[axi].plot(dz, label="z")
+    for i in range(len(dv)):
+        cv = dv[i]
+        vector_info(cv, "\t{}".format(cv.name))
+        ax[axi].plot(cv, label=cv.name)
     ax[axi].set_title(sensor)
     ax[axi].legend()
 plt.show()
