@@ -97,16 +97,51 @@ class LocationMa {
 
 }
 
-class SensorsMa(private val sensorsType: Int) {
-    private var sensorManager: SensorManager? = null
-    var sensorsList: ArrayList<Sensor> = arrayListOf()
-    var theSensor: Sensor? = null
+class SensorMa(val theSensor: Sensor) {
     private var elMutex: Mutex = Mutex()
     private var eventLog = arrayListOf<String>()
     private var savedUpTo: Int = 0
     private var ef0: FDataStats = FDataStats()
     private var ef1: FDataStats = FDataStats()
     private var ef2: FDataStats = FDataStats()
+
+    suspend fun sensorEvent(se: SensorEvent): String {
+        val sName = se.sensor.name.replace(' ', '-')
+        var sData = "$sName ${se.timestamp}"
+        for ((i,f) in se.values.withIndex()) {
+            when(i) {
+                0 -> ef0.update(f)
+                1 -> ef1.update(f)
+                2 -> ef2.update(f)
+            }
+            sData += " $f"
+        }
+        elMutex.withLock { eventLog.add(sData) }
+        Log.i(TAG, "SensorEvent: $sData")
+        return sData
+    }
+
+    fun status(): String {
+        var info = "Sensor ${theSensor.name} selected\n"
+        info += "\tminDelay [${theSensor.minDelay}], maxDelay [${theSensor.maxDelay}]\n"
+        info += "\tresolution [${theSensor.resolution}]\n"
+        info += "\tmaxRange [${theSensor.maximumRange}]\n"
+        info += "\tpower [${theSensor.power}]\n"
+        info += "\tvendor [${theSensor.vendor}], version [${theSensor.version}]\n"
+        info += "\n"
+        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]\n"
+        info += "\tDMin [${ef0.min}, ${ef1.min}, ${ef2.min}]\n"
+        info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
+        info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
+        return info
+    }
+
+}
+
+class SensorsMa(private val sensorsType: Int) {
+    private var sensorManager: SensorManager? = null
+    var sensorsList: ArrayList<Sensor> = arrayListOf()
+    var sensorMa: SensorMa? = null
     var locationMa: LocationMa = LocationMa()
 
     @JvmName("setSensorManager1")
@@ -129,17 +164,17 @@ class SensorsMa(private val sensorsType: Int) {
     }
 
     fun setSensor(sensor: Sensor) {
-        theSensor = sensor
+        sensorMa = SensorMa(sensor)
     }
 
     /**
      * Start listening to events from either the passed sensor or any previously set sensor
      */
     fun monitorAddSensor(activity: MainActivity, sensor: Sensor? = null) {
-        val addSensor = sensor ?: theSensor
+        val addSensor = sensor ?: sensorMa?.theSensor
         addSensor?.let {
             sensorManager?.registerListener(activity, addSensor, SensorManager.SENSOR_DELAY_NORMAL)
-            Log.i(TAG, "SensorMA: Adding Listener for ${it.name}")
+            Log.i(TAG, "SensorsMA: Adding Listener for ${it.name}")
         }
     }
 
@@ -147,10 +182,10 @@ class SensorsMa(private val sensorsType: Int) {
      * Stop listening to events wrt either the passed sensor or any previously set sensor
      */
     fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
-        val remSensor = sensor ?: theSensor
+        val remSensor = sensor ?: sensorMa?.theSensor
         remSensor?.let {
             sensorManager?.unregisterListener(activity, remSensor)
-            Log.i(TAG, "SensorMA: Removing Listener for ${it.name}")
+            Log.i(TAG, "SensorsMA: Removing Listener for ${it.name}")
         }
     }
 
@@ -162,40 +197,16 @@ class SensorsMa(private val sensorsType: Int) {
      */
     fun monitorStopAll(activity: MainActivity) {
         sensorManager?.unregisterListener(activity)
-        Log.i(TAG, "SensorMA: Removing all Listeners")
+        Log.i(TAG, "SensorsMA: Removing all Listeners")
     }
 
-    suspend fun sensorEvent(se: SensorEvent): String {
-        val sName = se.sensor.name.replace(' ', '-')
-        var sData = "$sName ${se.timestamp}"
-        for ((i,f) in se.values.withIndex()) {
-            when(i) {
-                0 -> ef0.update(f)
-                1 -> ef1.update(f)
-                2 -> ef2.update(f)
-            }
-            sData += " $f"
-        }
-        elMutex.withLock { eventLog.add(sData) }
-        Log.i(TAG, "SensorEvent: $sData")
-        return sData
-    }
 
     fun status(): String {
-        if (theSensor == null) {
+        if (sensorMa == null) {
             return "Sensor not yet selected"
         }
-        var info = "Sensor ${theSensor?.name} selected\n"
-        info += "\tminDelay [${theSensor?.minDelay}], maxDelay [${theSensor?.maxDelay}]\n"
-        info += "\tresolution [${theSensor?.resolution}]\n"
-        info += "\tmaxRange [${theSensor?.maximumRange}]\n"
-        info += "\tpower [${theSensor?.power}]\n"
-        info += "\tvendor [${theSensor?.vendor}], version [${theSensor?.version}]\n"
-        info += "\n"
-        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]\n"
-        info += "\tDMin [${ef0.min}, ${ef1.min}, ${ef2.min}]\n"
-        info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
-        info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
+        var info = ""
+        info += sensorMa?.status()
         info += "\n"
         if (locationMa.locationLog.size > 0) {
             info += "\tLoc [${locationMa.locationLog.last()}]\n"
