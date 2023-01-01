@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
@@ -44,6 +45,8 @@ import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
+const val REFRESHME_TIMER_MSEC = 500L
+
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
     val bMultipleSensors: Boolean = false
@@ -70,6 +73,10 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         sensorsMa.locationMa.checkPermissionStatus(this)
         sensorsMa.locationMa.requestLocations(this)
+        onBackPressedDispatcher.addCallback(this) {
+            sensorsMa.sensorMa = null
+            refreshMe.value += 1
+        }
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -146,7 +153,7 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
     sensorsMa.setSensor(selSensor, mainActivity)
     mainActivity?.let {
         if (it.timerTask == null) {
-            it.timerTask = Timer().schedule(5000,5000) {
+            it.timerTask = Timer().schedule(REFRESHME_TIMER_MSEC, REFRESHME_TIMER_MSEC) {
                 it.refreshMe.value += 1
             }
         }
