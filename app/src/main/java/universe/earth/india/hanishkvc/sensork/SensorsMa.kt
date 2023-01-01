@@ -97,7 +97,7 @@ class LocationMa {
 
 }
 
-class SensorMa(private val sensorsType: Int) {
+class SensorsMa(private val sensorsType: Int) {
     private var sensorManager: SensorManager? = null
     var sensorsList: ArrayList<Sensor> = arrayListOf()
     var theSensor: Sensor? = null

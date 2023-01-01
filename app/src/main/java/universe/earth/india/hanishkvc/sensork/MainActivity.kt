@@ -43,15 +43,15 @@ const val HEADING_SENSORS = "Sensors"
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
     val bMultipleSensors: Boolean = false
-    private lateinit var sensorMa: SensorMa
+    private lateinit var sensorsMa: SensorsMa
     lateinit var refreshMe: MutableState<Int>
     var timerTask: TimerTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         refreshMe = mutableStateOf(0)
-        sensorMa = SensorMa(Sensor.TYPE_ALL)
-        sensorMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
+        sensorsMa = SensorsMa(Sensor.TYPE_ALL)
+        sensorsMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
         val curDateTime = LocalDateTime.now()
         val fileId = DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(curDateTime)
         getExternalFilesDir(null)?.let {
@@ -60,18 +60,18 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
             Log.i(TAG, "Save events to $fAPath")
             Toast.makeText(this, "SaveEventsTo: $fAPath", Toast.LENGTH_SHORT).show()
             lifecycleScope.launch(Dispatchers.IO) {
-                sensorMa.save_events(fAPath)
+                sensorsMa.save_events(fAPath)
             }
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        sensorMa.locationMa.checkPermissionStatus(this)
-        sensorMa.locationMa.requestLocations(this)
+        sensorsMa.locationMa.checkPermissionStatus(this)
+        sensorsMa.locationMa.requestLocations(this)
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
         se ?: return
         lifecycleScope.launch {
-            sensorMa.sensorEvent(se)
+            sensorsMa.sensorEvent(se)
         }
     }
 
@@ -82,14 +82,14 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     override fun onStart() {
         super.onStart()
         Log.w(TAG, "OnStart called")
-        sensorMa.theSensor?.let {
-            sensorMa.monitorAddSensor(this)
+        sensorsMa.theSensor?.let {
+            sensorsMa.monitorAddSensor(this)
         }
         setContent {
             SensorKTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    DrawMainContent(HEADING_SENSORS, sensorMa, this, refreshMe)
+                    DrawMainContent(HEADING_SENSORS, sensorsMa, this, refreshMe)
                 }
             }
         }
@@ -98,14 +98,14 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     override fun onStop() {
         super.onStop()
         Log.w(TAG, "OnStop called")
-        sensorMa.monitorStopAll(this)
-        sensorMa.locationMa.cancelLocations(this)
+        sensorsMa.monitorStopAll(this)
+        sensorsMa.locationMa.cancelLocations(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         Log.w(TAG, "OnSaveInstanceState called")
-        sensorMa.theSensor?.let {
+        sensorsMa.theSensor?.let {
             outState.putString("sensor_name", it.name)
             Log.w(TAG, "OnSaveInstanceState: Saving ${it.name}")
         }
@@ -117,13 +117,13 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         savedInstanceState ?: return
         val sensorName = savedInstanceState.getString("sensor_name") ?: return
         var selSensor: Sensor? = null
-        for (curSensor in sensorMa.sensorsList) {
+        for (curSensor in sensorsMa.sensorsList) {
             if (curSensor.name == sensorName) {
                 selSensor = curSensor
             }
         }
         selSensor?.let {
-            handleSensorSelection(this, sensorMa, selSensor)
+            handleSensorSelection(this, sensorsMa, selSensor)
             refreshMe.value += 1
             Log.i(TAG, "Restoring: Previously selected sensor $selSensor")
         }
@@ -131,13 +131,13 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
     override fun onLocationChanged(location: Location) {
         lifecycleScope.launch {
-            sensorMa.locationMa.locationEvent(location)
+            sensorsMa.locationMa.locationEvent(location)
         }
     }
 
 }
 
-fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorMa, selSensor: Sensor?) {
+fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, selSensor: Sensor?) {
     if (selSensor == null) return
     if (sensorsMa.theSensor != selSensor) {
         mainActivity?.let {
@@ -162,7 +162,7 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorMa, selS
 @Composable
 fun DrawMainContent(
     name: String,
-    sensorsMa: SensorMa?,
+    sensorsMa: SensorsMa?,
     mainActivity: MainActivity?,
     refreshMe: MutableState<Int>
 ) {
@@ -173,7 +173,7 @@ fun DrawMainContent(
 @Composable
 fun MainContent(
     name: String,
-    sensorsMa: SensorMa?,
+    sensorsMa: SensorsMa?,
     mainActivity: MainActivity?,
 ) {
     var updateStatusCounter by remember {
