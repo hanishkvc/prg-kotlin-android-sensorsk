@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -150,6 +154,24 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
 }
 
 @Composable
+fun PlotData(sensorsMa: SensorsMa) {
+    if (sensorsMa.sensorMa == null) return
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        Log.i(TAG, "Canvas: $size")
+        val canvasHeight = size.height
+        val ymid = canvasHeight/2
+        for((i,fva) in sensorsMa.sensorMa!!.eventFLog.withIndex()) {
+            val fx = i.toFloat()
+            val fy = ymid + (fva[0]*4)
+            if ((i%50) == 0) {
+                Log.i(TAG, "Plot:$fx, $fy")
+            }
+            drawLine(Color.Blue, start = Offset(x=fx, y=ymid), end = Offset(x=fx, y=fy))
+        }
+    }
+}
+
+@Composable
 fun DrawMainContent(
     name: String,
     sensorsMa: SensorsMa?,
@@ -183,7 +205,7 @@ fun MainContent(
             Column(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                    .weight(0.5F, true)
+                    .weight(0.33F, true)
                     .verticalScroll(rememberScrollState())
                     .fillMaxWidth()
             ) {
@@ -202,7 +224,8 @@ fun MainContent(
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
             sensorsMa?.status()?.let {
-                Text(text = it, modifier = Modifier.weight(0.5f).verticalScroll(rememberScrollState()))
+                PlotData(sensorsMa)
+                Text(text = it, modifier = Modifier.weight(0.33f).verticalScroll(rememberScrollState()))
             }
         }
     }
