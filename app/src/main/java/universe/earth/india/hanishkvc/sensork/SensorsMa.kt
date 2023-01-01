@@ -8,6 +8,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.SystemClock
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
@@ -108,8 +109,14 @@ class SensorMa(val theSensor: Sensor) {
     private var elMutex: Mutex = Mutex()
     private var eventLog = arrayListOf<String>()
     private var seValues = arrayListOf<FDataStats>()
+    private val bootEpochTime = System.currentTimeMillis() - (SystemClock.elapsedRealtimeNanos()/1000)
 
-    fun seValuesUpdate(index: Int, value: Float) {
+    init {
+        Log.i(TAG, "SensorMa:Init: CurEpochTime:${System.currentTimeMillis()}, CurElapsedTime:${SystemClock.elapsedRealtimeNanos()/1000}")
+        Log.i(TAG, "SensorMa:Init: BootEpochTime:$bootEpochTime")
+    }
+
+    private fun seValuesUpdate(index: Int, value: Float) {
         if (index >= seValues.size) {
             for(i in seValues.size until index+1) {
                 seValues.add(FDataStats())
@@ -120,7 +127,8 @@ class SensorMa(val theSensor: Sensor) {
 
     suspend fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
-        var sData = "$sName ${se.timestamp}"
+        val curEpochTime = bootEpochTime + (se.timestamp/1000)
+        var sData = "$sName $curEpochTime"
         for ((i,f) in se.values.withIndex()) {
             seValuesUpdate(i, f)
             sData += " $f"
