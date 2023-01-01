@@ -10,10 +10,10 @@ import sys
 
 
 def _vector_info(vdata: pd.Series, tag):
-    print("{}: min {:24.8f}, avg {:24.8f}, Max {:24.8f}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
+    print("{}: min {:32.12f}, avg {:32.12f}, Max {:32.12f}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
 
 def vector_info(vdata: pd.Series, tag):
-    _vector_info(vdata.array, "{}-RawDat".format(tag))
+    _vector_info(vdata.array, "\n{}-RawDat".format(tag))
     deltas = vdata.array[1:] - vdata.array[:-1]
     _vector_info(deltas, "{}-Deltas".format(tag))
 
@@ -21,7 +21,8 @@ def vector_info(vdata: pd.Series, tag):
 FNSensor = 'sensor'
 FNTime = 'time'
 FNames = [ FNSensor, FNTime ]
-for i in range(14):
+ValueFieldsCnt = 20
+for i in range(ValueFieldsCnt):
     FNames.append("F{}".format(i))
 
 df = pd.read_csv(sys.argv[1], sep=' ', names=FNames)
@@ -41,7 +42,7 @@ for sensor in sensorsList:
     # Extract the fields in the data
     dt = bdf[FNTime]
     dv = []
-    for i in range(2,16):
+    for i in range(2,len(FNames)):
         cv = bdf[FNames[i]]
         if bdf[cv.notna()].size == 0:
             break
