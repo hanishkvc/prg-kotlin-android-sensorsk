@@ -13,10 +13,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -26,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -171,7 +167,7 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @Composable
 fun PlotData(sensorsMa: SensorsMa?) {
-    val vCheck = sensorsMa?.sensorMa ?: return
+    sensorsMa?.sensorMa ?: return
     Canvas(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -181,6 +177,7 @@ fun PlotData(sensorsMa: SensorsMa?) {
         var min = Float.POSITIVE_INFINITY
         var max = Float.NEGATIVE_INFINITY
         withTransform({
+            scale(scaleX = 1F, scaleY = canvasHeight/200F)
             translate(top = yMid)
         }) {
             for((i,fva) in sensorsMa.sensorMa!!.eventFLog.withIndex()) {
@@ -202,6 +199,20 @@ fun PlotData(sensorsMa: SensorsMa?) {
                 drawLine(Color.Blue, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy))
             }
             testCanvasDraw(ds = this)
+        }
+    }
+}
+
+@Composable
+fun ShowTextStatus(sensorsMa: SensorsMa?, columnScope: ColumnScope) {
+    with(columnScope) {
+        sensorsMa?.status()?.let {
+            Text(
+                text = it,
+                modifier = Modifier
+                    .weight(0.33f)
+                    .verticalScroll(rememberScrollState())
+            )
         }
     }
 }
@@ -259,14 +270,7 @@ fun MainContent(
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
             PlotData(sensorsMa)
-            sensorsMa?.status()?.let {
-                Text(
-                    text = it,
-                    modifier = Modifier
-                        .weight(0.33f)
-                        .verticalScroll(rememberScrollState())
-                )
-            }
+            //ShowTextStatus(sensorsMa, this)
         }
     }
 }
