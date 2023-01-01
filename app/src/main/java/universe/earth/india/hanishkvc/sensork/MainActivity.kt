@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     private lateinit var sensorsMa: SensorsMa
     lateinit var refreshMe: MutableState<Int>
     var timerTask: TimerTask? = null
+    var windowHeight: Int = 800
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
             sensorsMa.clearSensorMa(mainActivity)
             refreshMe.value += 1
         }
+        windowHeight = windowManager.defaultDisplay.width
     }
 
     override fun onSensorChanged(se: SensorEvent?) {
@@ -178,19 +180,20 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun PlotData(sensorsMa: SensorsMa?) {
+fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     sensorsMa?.sensorMa ?: return
+    mainActivity ?: return
     val eventFLog = sensorsMa.sensorMa!!.eventFLog
     val textMeasure = rememberTextMeasurer()
     Canvas(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxWidth().height(mainActivity.windowHeight.times(0.33).dp)
     ) {
         Log.i(TAG, "Canvas: $size")
         val canvasHeight = size.height
         val yMid = canvasHeight/2F
         drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
         val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
-        val dataHeight = (max - min)*1.2F
+        val dataHeight = (max - min)*1.4F
         withTransform({
             scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
             translate(top = yMid)
@@ -278,7 +281,7 @@ fun MainContent(
         }
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
-            PlotData(sensorsMa)
+            PlotData(sensorsMa, mainActivity)
             ShowTextStatus(sensorsMa, this)
         }
     }
