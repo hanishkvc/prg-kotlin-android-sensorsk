@@ -186,8 +186,19 @@ class SensorsMa(private val sensorsType: Int) {
         }
     }
 
-    fun setSensor(sensor: Sensor) {
+    fun setSensor(sensor: Sensor, mainActivity: MainActivity?) {
+        if (mainActivity == null) return
+        sensorMa?.let {
+            if (it.theSensor.name != sensor.name) {
+                if (!mainActivity.bMultipleSensors) {
+                    Toast.makeText(mainActivity, "Removing sensor ${it.theSensor.name}", Toast.LENGTH_SHORT).show()
+                    monitorRemoveSensor(mainActivity)
+                }
+            }
+        }
         sensorMa = SensorMa(sensor)
+        monitorAddSensor(mainActivity)
+        Toast.makeText(mainActivity, "Added sensor ${sensorMa!!.theSensor.name}", Toast.LENGTH_SHORT).show()
     }
 
     /**

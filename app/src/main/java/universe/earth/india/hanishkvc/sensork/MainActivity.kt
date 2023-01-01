@@ -139,20 +139,8 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
 fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, selSensor: Sensor?) {
     if (selSensor == null) return
-    sensorsMa.sensorMa?.let {
-        if (it.theSensor != selSensor) {
-            mainActivity?.let {
-                if (!mainActivity.bMultipleSensors) {
-                    Toast.makeText(mainActivity, "Removing sensor ${sensorsMa.sensorMa!!.theSensor.name}", Toast.LENGTH_SHORT).show()
-                    sensorsMa.monitorRemoveSensor(mainActivity)
-                }
-            }
-        }
-    }
-    sensorsMa.setSensor(selSensor)
+    sensorsMa.setSensor(selSensor, mainActivity)
     mainActivity?.let {
-        sensorsMa.monitorAddSensor(mainActivity)
-        Toast.makeText(mainActivity, "Added sensor ${sensorsMa.sensorMa!!.theSensor.name}", Toast.LENGTH_SHORT).show()
         if (it.timerTask == null) {
             it.timerTask = Timer().schedule(5000,5000) {
                 it.refreshMe.value += 1
