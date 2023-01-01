@@ -181,8 +181,10 @@ fun PlotData(sensorsMa: SensorsMa?) {
         val canvasHeight = size.height
         val yMid = canvasHeight/2F
         drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
+        val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
+        val dataHeight = (max - min)*1.2F
         withTransform({
-            scale(scaleX = 1F, scaleY = canvasHeight/100F)
+            scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
             translate(top = yMid)
         }) {
             for((i,fva) in eventFLog.withIndex()) {

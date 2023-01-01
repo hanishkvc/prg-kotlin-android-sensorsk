@@ -127,6 +127,20 @@ class SensorMa(val theSensor: Sensor) {
         seValues[index].update(value)
     }
 
+    fun getSEValuesMinMax(): Pair<Float, Float> {
+        var min = Float.POSITIVE_INFINITY
+        var max = Float.NEGATIVE_INFINITY
+        for (sev in seValues) {
+            if (min > sev.min) {
+                min = sev.min
+            }
+            if (max < sev.max) {
+                max = sev.max
+            }
+        }
+        return Pair(min, max)
+    }
+
     suspend fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
         val curEpochTime = bootEpochTime + (se.timestamp/DIV_NANO2MILLI)
