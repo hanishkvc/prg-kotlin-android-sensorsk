@@ -95,6 +95,13 @@ class LocationMa {
         return sData
     }
 
+    fun status(): String {
+        if (locationLog.size > 0) {
+            return "\tLoc [${locationLog.last()}]\n"
+        }
+        return ""
+    }
+
 }
 
 class SensorMa(val theSensor: Sensor) {
@@ -224,9 +231,7 @@ class SensorsMa(private val sensorsType: Int) {
         var info = ""
         info += sensorMa?.status()
         info += "\n"
-        if (locationMa.locationLog.size > 0) {
-            info += "\tLoc [${locationMa.locationLog.last()}]\n"
-        }
+        info += locationMa.status()
         return info
     }
 
