@@ -137,7 +137,7 @@ class SensorMa(val theSensor: Sensor) {
         }
         elMutex.withLock {
             eventLog.add(sData)
-            eventFLog.add(se.values)
+            eventFLog.add(se.values.clone())
         }
         Log.i(TAG, "SensorEvent: $sData")
         return sData
@@ -289,7 +289,12 @@ class SensorsMa(private val sensorsType: Int) {
             val fSave = File(fPath)
             while (true) {
                 delay(5000)
-                saveEvents(fSave)
+                sensorMa?.let {
+                    for(i in 0 until (it.eventFLog.size)) {
+                        Log.i(TAG, "SaveEvents:$i: ${it.eventFLog[i][0]}")
+                    }
+                }
+                //saveEvents(fSave)
             }
         }
     }

@@ -168,6 +168,7 @@ fun testCanvasDraw(ds: DrawScope) {
 @Composable
 fun PlotData(sensorsMa: SensorsMa?) {
     sensorsMa?.sensorMa ?: return
+    val eventFLog = sensorsMa.sensorMa!!.eventFLog
     Canvas(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -177,12 +178,12 @@ fun PlotData(sensorsMa: SensorsMa?) {
         var min = Float.POSITIVE_INFINITY
         var max = Float.NEGATIVE_INFINITY
         withTransform({
-            scale(scaleX = 1F, scaleY = canvasHeight/200F)
+            scale(scaleX = 1F, scaleY = canvasHeight/100F)
             translate(top = yMid)
         }) {
-            for((i,fva) in sensorsMa.sensorMa!!.eventFLog.withIndex()) {
+            for((i,fva) in eventFLog.withIndex()) {
                 val fx = i.toFloat()
-                val fy = fva[0]*30
+                val fy = fva[0]
                 if (min > fy) {
                     min = fy
                 }
@@ -194,7 +195,7 @@ fun PlotData(sensorsMa: SensorsMa?) {
                     for(fv in fva) {
                         sData += "$fv "
                     }
-                    Log.i(TAG, "Plot:$fx, $fy ($min, $max), $sData")
+                    Log.i(TAG, "Plot:${eventFLog.size}: $fx, $fy ($min, $max), $sData")
                 }
                 drawLine(Color.Blue, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy))
             }
@@ -270,7 +271,7 @@ fun MainContent(
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
             PlotData(sensorsMa)
-            //ShowTextStatus(sensorsMa, this)
+            ShowTextStatus(sensorsMa, this)
         }
     }
 }
