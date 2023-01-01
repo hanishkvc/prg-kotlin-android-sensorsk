@@ -19,9 +19,14 @@ def vector_info(vdata: pd.Series, tag):
 
 
 
-df = pd.read_csv(sys.argv[1], sep=' ', names=['sensor', 'time', 'x', 'y', 'z'])
+df = pd.read_csv(sys.argv[1], sep=' ', names=range(16))
+FiSensor = 0
+FiTime = 1
+FiX = 2
+FiY = 3
+FiZ = 4
 
-sensorsList = df['sensor'].unique()
+sensorsList = df[FiSensor].unique()
 print("NumOfSensors:", sensorsList.size)
 print("Sensors:", sensorsList)
 
@@ -31,13 +36,13 @@ for sensor in sensorsList:
     print("\nPlotting:", sensor)
     axi += 1
     # Extract data belonging to current sensor
-    bdf = df[df['sensor'] == sensor]
+    bdf = df[df[FiSensor] == sensor]
     print(bdf)
     # Extract the fields in the data
-    dt = bdf['time']
-    dx = bdf['x']
-    dy = bdf['y']
-    dz = bdf['z']
+    dt = bdf[FiTime]
+    dx = bdf[FiX]
+    dy = bdf[FiY]
+    dz = bdf[FiZ]
     vector_info(dt, "\tdt")
     vector_info(dx, "\tdx")
     vector_info(dy, "\tdy")
