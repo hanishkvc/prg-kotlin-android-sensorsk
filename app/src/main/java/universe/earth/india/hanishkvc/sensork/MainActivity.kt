@@ -76,6 +76,9 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         sensorsMa.locationMa.requestLocations(this)
         val mainActivity = this
         onBackPressedDispatcher.addCallback(this) {
+            if (sensorsMa.sensorMa == null) {
+                finish()
+            }
             sensorsMa.clearSensorMa(mainActivity)
             refreshMe.value += 1
         }
