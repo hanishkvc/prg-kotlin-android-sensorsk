@@ -24,7 +24,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -165,16 +168,19 @@ fun testCanvasDraw(ds: DrawScope) {
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun PlotData(sensorsMa: SensorsMa?) {
     sensorsMa?.sensorMa ?: return
     val eventFLog = sensorsMa.sensorMa!!.eventFLog
+    val textMeasure = rememberTextMeasurer()
     Canvas(
         modifier = Modifier.fillMaxSize()
     ) {
         Log.i(TAG, "Canvas: $size")
         val canvasHeight = size.height
         val yMid = canvasHeight/2F
+        drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
         withTransform({
             scale(scaleX = 1F, scaleY = canvasHeight/100F)
             translate(top = yMid)
