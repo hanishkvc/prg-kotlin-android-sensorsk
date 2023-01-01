@@ -135,8 +135,8 @@ class SensorMa(val theSensor: Sensor) {
         info += "\tpower [${theSensor.power}]\n"
         info += "\tvendor [${theSensor.vendor}], version [${theSensor.version}]\n"
         info += "\n"
-        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]\n"
         info += "\tDMin [${ef0.min}, ${ef1.min}, ${ef2.min}]\n"
+        info += "\tDAvg [${ef0.avg()}, ${ef1.avg()}, ${ef2.avg()}]\n"
         info += "\tDMax [${ef0.max}, ${ef1.max}, ${ef2.max}]\n"
         info += "\tDCount [${ef0.count}, ${ef1.count}, ${ef2.count}]\n"
         return info
