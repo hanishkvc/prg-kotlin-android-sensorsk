@@ -32,6 +32,7 @@ print("NumOfSensors:", sensorsList.size)
 print("Sensors:", sensorsList)
 
 fig, ax = plt.subplots(sensorsList.size, 1)
+fig.set_size_inches(10, 6*sensorsList.size)
 axi = -1
 for sensor in sensorsList:
     print("\nPlotting:", sensor)
@@ -55,4 +56,5 @@ for sensor in sensorsList:
         ax[axi].plot(cv, label=cv.name)
     ax[axi].set_title(sensor)
     ax[axi].legend()
+fig.savefig("/tmp/plotdata.png")
 plt.show()
