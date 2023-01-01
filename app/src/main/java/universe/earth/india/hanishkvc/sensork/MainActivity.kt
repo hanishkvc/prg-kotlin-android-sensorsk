@@ -25,8 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -159,15 +157,30 @@ fun PlotData(sensorsMa: SensorsMa) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         Log.i(TAG, "Canvas: $size")
         val canvasHeight = size.height
-        val ymid = canvasHeight/2
+        val yMid = canvasHeight/2
         for((i,fva) in sensorsMa.sensorMa!!.eventFLog.withIndex()) {
-            val fx = i.toFloat()
-            val fy = ymid + (fva[0]*4)
+            val fx = i.toFloat()*2
+            val fy = yMid + (fva[0]*30)
             if ((i%50) == 0) {
-                Log.i(TAG, "Plot:$fx, $fy")
+                var sData = ""
+                for(j in 0 until fva.size) {
+                    sData += "${fva[j]} "
+                }
+                Log.i(TAG, "Plot:$fx, $fy, $sData")
             }
-            drawLine(Color.Blue, start = Offset(x=fx, y=ymid), end = Offset(x=fx, y=fy))
+            drawLine(Color.Blue, start = Offset(x=fx, y=yMid), end = Offset(x=fx, y=fy))
         }
+        /*
+        drawLine(Color.Blue, start=Offset(0F,yMid), end=Offset(10F,yMid+200))
+        drawLine(Color.Blue, start=Offset(10F,yMid+200), end=Offset(20F,yMid-300))
+        drawLine(Color.Blue, start=Offset(20F,yMid-300), end=Offset(30F,yMid+100))
+        drawLine(Color.Blue, start=Offset(30F,yMid+100), end=Offset(40F,yMid-200))
+
+        drawLine(Color.Blue, start=Offset(0F,yMid), end=Offset(0F,yMid+200))
+        drawLine(Color.Blue, start=Offset(10F,yMid), end=Offset(10F,yMid-300))
+        drawLine(Color.Blue, start=Offset(20F,yMid), end=Offset(20F,yMid+100))
+        drawLine(Color.Blue, start=Offset(30F,yMid), end=Offset(30F,yMid-200))
+         */
     }
 }
 
