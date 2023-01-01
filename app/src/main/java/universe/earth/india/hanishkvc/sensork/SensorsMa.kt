@@ -108,6 +108,7 @@ class LocationMa {
 const val DIV_NANO2MILLI = 1000000
 class SensorMa(val theSensor: Sensor) {
     private var elMutex: Mutex = Mutex()
+    var eventFLog = arrayListOf<FloatArray>()
     private var eventLog = arrayListOf<String>()
     private var seValues = arrayListOf<FDataStats>()
     private val bootEpochTime = System.currentTimeMillis() - (SystemClock.elapsedRealtimeNanos()/DIV_NANO2MILLI)
@@ -134,7 +135,10 @@ class SensorMa(val theSensor: Sensor) {
             seValuesUpdate(i, f)
             sData += " $f"
         }
-        elMutex.withLock { eventLog.add(sData) }
+        elMutex.withLock {
+            eventLog.add(sData)
+            eventFLog.add(se.values)
+        }
         Log.i(TAG, "SensorEvent: $sData")
         return sData
     }
@@ -176,6 +180,7 @@ class SensorMa(val theSensor: Sensor) {
         elMutex.withLock {
             for(i in 0 until numEntries) {
                 eventLog.removeAt(0)
+                eventFLog.removeAt(0)
             }
         }
         return sData
