@@ -201,7 +201,9 @@ fun MainContent(
         }
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
-            sensorsMa?.status()?.let { Text(text = it, modifier = Modifier.weight(0.5f)) }
+            sensorsMa?.status()?.let {
+                Text(text = it, modifier = Modifier.weight(0.5f).verticalScroll(rememberScrollState()))
+            }
         }
     }
 }
