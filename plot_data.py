@@ -8,8 +8,13 @@ import matplotlib.pyplot as plt
 import sys
 
 
+def _vector_info(vdata: pd.Series, tag):
+    print("{}: min {}, avg {}, Max {}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
+
 def vector_info(vdata: pd.Series, tag):
-    print("{}: m{}, a{}, M{}".format(tag, vdata.min(), vdata.mean(), vdata.max()))
+    _vector_info(vdata.array, tag)
+    deltas = vdata.array[1:] - vdata.array[:-1]
+    _vector_info(deltas, "{}-Deltas".format(tag))
 
 df = pd.read_csv(sys.argv[1], sep=' ', names=['sensor', 'time', 'x', 'y', 'z'])
 
