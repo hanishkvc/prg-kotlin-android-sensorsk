@@ -29,10 +29,16 @@ so created this, for some experimentation I was doing.
 Usage
 ######
 
+CSV file
+==========
+
 THe logic by default saves/logs sensor data into csv file, at a granularity
 of once every 1000 records have been captured. So for now remember to capture
 atleast 1000 records wrt any sensor, before switching them, if you want to
-save the data into csv file.
+save the corresponding sensor data into csv file.
+
+The CSV file is maintained in the external/emulated storage area alloted
+for the android application wrt its files.
 
 
 GUI Interaction

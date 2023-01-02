@@ -226,16 +226,21 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
                     scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
                     translate(top = yMid)
                 }) {
-                    for((i,fva) in it.withIndex()) {
-                        val fx = i.toFloat()
-                        for((j,fy) in fva.withIndex()) {
+                    for(i in 1 until it.size) {
+                        val fva2 = it[i]
+                        val fva1 = it[i-1]
+                        val fx2 = i.toFloat()
+                        val fx1 = (i-1).toFloat()
+                        for(j in fva2.indices) {
+                            val fy2 = fva2[j]
+                            val fy1 = fva1[j]
                             val color = when (j) {
                                 0 -> Color.Red
                                 1 -> Color.Green
                                 2 -> Color.Blue
                                 else -> Color.Black
                             }
-                            drawLine(color, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy), alpha = 0.5F)
+                            drawLine(color, start = Offset(x=fx1, y=fy1), end = Offset(x=fx2, y=fy2))
                         }
                     }
                 }
