@@ -29,6 +29,16 @@ so created this, for some experimentation I was doing.
 Usage
 ######
 
+Plot
+======
+
+Each captured sensor data event corresponds to one entry along the x-axis.
+
+Y-axis plots the sensed value wrt all the parameters captured by the sensor.
+The y-axis is autoscaled based on the min and max value seen in the captured
+data across all the fields/parameters.
+
+
 CSV file
 ==========
 

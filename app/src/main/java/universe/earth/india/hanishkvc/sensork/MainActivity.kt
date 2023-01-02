@@ -240,7 +240,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
                                 2 -> Color.Blue
                                 else -> Color.Black
                             }
-                            drawLine(color, start = Offset(x=fx1, y=fy1), end = Offset(x=fx2, y=fy2))
+                            drawLine(color, start = Offset(x=fx1, y=fy1), end = Offset(x=fx2, y=fy2), strokeWidth = 1F)
                         }
                     }
                 }
