@@ -315,10 +315,7 @@ fun MainContent(
                         onClick = {
                             handleSensorSelection(mainActivity, sensorsMa, item)
                             updateStatusCounter += 1
-                            when {
-                                mainActivity?.uiNavPos!! <= 0 -> mainActivity.uiNavPos = 1
-                                else -> mainActivity.uiNavPos += 1
-                            }
+                            mainActivity?.uiNavPos = 1
                         },
                     ) {
                         Text(text=item.name)
