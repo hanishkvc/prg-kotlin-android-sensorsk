@@ -223,15 +223,16 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
                 val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
                 val dataHeight = (max - min)*1.4F
                 val dataWidth = eventFLog.size*1.1F
+                val scaleX = size.width/dataWidth
                 withTransform({
-                    scale(scaleX = size.width/dataWidth, scaleY = canvasHeight/dataHeight)
+                    scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
                     translate(top = yMid)
                 }) {
                     for(i in 1 until it.size) {
                         val fva2 = it[i]
                         val fva1 = it[i-1]
-                        val fx2 = i.toFloat()
-                        val fx1 = (i-1).toFloat()
+                        val fx2 = i.toFloat() * scaleX
+                        val fx1 = (i-1).toFloat() * scaleX
                         for(j in fva2.indices) {
                             val fy2 = fva2[j]
                             val fy1 = fva1[j]
