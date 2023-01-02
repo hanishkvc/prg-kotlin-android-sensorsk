@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -187,35 +188,51 @@ fun testCanvasDraw(ds: DrawScope) {
 fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
-    val eventFLog = sensorsMa.sensorMa!!.eventFLog.clone() as ArrayList<FloatArray>
     val textMeasure = rememberTextMeasurer()
+    var eventFLog: ArrayList<FloatArray>? = null
+    var canvasRefresh = remember { mutableStateOf(0) }
+    LaunchedEffect(mainActivity.refreshMe) {
+        withContext(Dispatchers.IO) {
+            eventFLog = arrayListOf()
+            for (sev in sensorsMa.sensorMa!!.eventFLog) {
+                eventFLog!!.add(sev.clone())
+            }
+            canvasRefresh.value += 1
+        }
+    }
     Canvas(
-        modifier = Modifier.fillMaxWidth().height(mainActivity.windowHeight.times(0.33).dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(mainActivity.windowHeight.times(0.33).dp)
     ) {
-        Log.i(TAG, "Canvas: $size")
-        val canvasHeight = size.height
-        val yMid = canvasHeight/2F
-        drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
-        val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
-        val dataHeight = (max - min)*1.4F
-        withTransform({
-            scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
-            translate(top = yMid)
-        }) {
-            for((i,fva) in eventFLog.withIndex()) {
-                val fx = i.toFloat()
-                for((j,fy) in fva.withIndex()) {
-                    val color = when (j) {
-                        0 -> Color.Red
-                        1 -> Color.Green
-                        2 -> Color.Blue
-                        else -> Color.Black
+        canvasRefresh.let {
+            Log.i(TAG, "Canvas: $size")
+            eventFLog?.let {
+                val canvasHeight = size.height
+                val yMid = canvasHeight/2F
+                drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
+                val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
+                val dataHeight = (max - min)*1.4F
+                withTransform({
+                    scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
+                    translate(top = yMid)
+                }) {
+                    for((i,fva) in it.withIndex()) {
+                        val fx = i.toFloat()
+                        for((j,fy) in fva.withIndex()) {
+                            val color = when (j) {
+                                0 -> Color.Red
+                                1 -> Color.Green
+                                2 -> Color.Blue
+                                else -> Color.Black
+                            }
+                            drawLine(color, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy), alpha = 0.5F)
+                        }
                     }
-                    drawLine(color, start = Offset(x=fx, y=0F), end = Offset(x=fx, y=fy), alpha = 0.5F)
                 }
             }
-            //testCanvasDraw(ds = this)
         }
+        //testCanvasDraw(ds = this)
     }
 }
 
