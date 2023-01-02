@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
     lateinit var refreshMe: MutableState<Int>
     var timerTask: TimerTask? = null
     var windowHeight: Int = 800
+    var uiNavPos: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +80,13 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         sensorsMa.locationMa.requestLocations(this)
         val mainActivity = this
         onBackPressedDispatcher.addCallback(this) {
+            mainActivity.uiNavPos -= 1
             if (sensorsMa.sensorMa == null) {
-                finish()
+                if (mainActivity.uiNavPos <= -2) {
+                    finish()
+                } else {
+                    Toast.makeText(mainActivity, "Press back again, if you want to quit...", Toast.LENGTH_SHORT).show()
+                }
             }
             sensorsMa.clearSensorMa(mainActivity)
             refreshMe.value += 1
@@ -309,6 +315,10 @@ fun MainContent(
                         onClick = {
                             handleSensorSelection(mainActivity, sensorsMa, item)
                             updateStatusCounter += 1
+                            when {
+                                mainActivity?.uiNavPos!! <= 0 -> mainActivity.uiNavPos = 1
+                                else -> mainActivity.uiNavPos += 1
+                            }
                         },
                     ) {
                         Text(text=item.name)
