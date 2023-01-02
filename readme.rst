@@ -38,6 +38,8 @@ Y-axis plots the sensed value wrt all the parameters captured by the sensor.
 The y-axis is autoscaled based on the min and max value seen in the captured
 data across all the fields/parameters.
 
+The logic uses the withTransform to apply scaling and translation wrt all
+points of data in a transparent and straight forward way.
 
 CSV file
 ==========
@@ -59,4 +61,7 @@ wrt the plot.
 
 Pressing back button, when a sensor is already selected, will clear the
 sensor selection. Pressing back button once again will quit the app.
+
+When user goes back and reselects the same sensor again, it takes care of
+reseting the auto scaling wrt y axis to start afresh.
 
