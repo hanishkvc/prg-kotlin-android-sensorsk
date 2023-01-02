@@ -189,13 +189,15 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
     val textMeasure = rememberTextMeasurer()
-    var eventFLog: ArrayList<FloatArray>? = null
+    val eventFLog: ArrayList<FloatArray> = arrayListOf()
     var canvasRefresh = remember { mutableStateOf(0) }
     LaunchedEffect(mainActivity.refreshMe) {
+        Log.i(TAG, "Canvas:Helper:Base: Do I ever reach here")
         withContext(Dispatchers.IO) {
-            eventFLog = arrayListOf()
+            Log.i(TAG, "Canvas:Helper:IO: Do I ever reach here")
+            eventFLog.clear()
             for (sev in sensorsMa.sensorMa!!.eventFLog) {
-                eventFLog!!.add(sev.clone())
+                eventFLog.add(sev.clone())
             }
             canvasRefresh.value += 1
         }
@@ -207,7 +209,8 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     ) {
         canvasRefresh.let {
             Log.i(TAG, "Canvas: $size")
-            eventFLog?.let {
+            eventFLog.let {
+                Log.i(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
                 val canvasHeight = size.height
                 val yMid = canvasHeight/2F
                 drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
@@ -215,7 +218,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
                 val dataHeight = (max - min)*1.4F
                 withTransform({
                     scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
-                    translate(top = yMid)
+                    translate(top = yMid, left = size.width*0.25F)
                 }) {
                     for((i,fva) in it.withIndex()) {
                         val fx = i.toFloat()
