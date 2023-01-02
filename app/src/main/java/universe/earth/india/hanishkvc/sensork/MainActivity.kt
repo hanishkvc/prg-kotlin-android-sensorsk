@@ -29,7 +29,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
@@ -189,16 +188,11 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, refreshMe: Muta
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
     val textMeasure = rememberTextMeasurer()
-    val eventFLog: ArrayList<FloatArray> = arrayListOf()
     var canvasRefresh = remember { mutableStateOf(0) }
     LaunchedEffect(refreshMe) {
         while (true) {
             delay(5000)
-            Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever reach here")
-            eventFLog.clear()
-            for (sev in sensorsMa.sensorMa!!.eventFLog) {
-                eventFLog.add(sev.clone())
-            }
+            val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
             canvasRefresh.value += 1
             Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever force a canvasRefresh: ${eventFLog.size}")
         }
@@ -210,6 +204,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, refreshMe: Muta
     ) {
         if (canvasRefresh.value > 0){
             Log.i(TAG, "Canvas: $size")
+            val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
             eventFLog.let {
                 Log.i(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
                 val canvasHeight = size.height
