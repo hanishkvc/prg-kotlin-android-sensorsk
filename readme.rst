@@ -25,3 +25,22 @@ wrt each sensor seperately.
 A long time back, I remember there being a google's android app for monitoring
 sensors in a android device or so, now I am not able to find/recall the same,
 so created this, for some experimentation I was doing.
+
+Usage
+######
+
+THe logic by default saves/logs sensor data into csv file, at a granularity
+of once every 1000 records have been captured. So for now remember to capture
+atleast 1000 records wrt any sensor, before switching them, if you want to
+save the data into csv file.
+
+
+GUI Interaction
+=================
+
+Double tapping the Plot area toggles between FullScreen and inbetween mode
+wrt the plot.
+
+Pressing back button, when a sensor is already selected, will clear the
+sensor selection. Pressing back button once again will quit the app.
+

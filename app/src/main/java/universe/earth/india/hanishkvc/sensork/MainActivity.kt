@@ -14,6 +14,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontStyle
@@ -189,6 +191,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     mainActivity ?: return
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
+    var canvasFullScreen = remember { mutableStateOf(false) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
             delay(1000)
@@ -197,16 +200,23 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
             Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:${canvasRefresh}: Got newer sensorevents list ${eventFLog.size}")
         }
     }
+    var canvasModifier = if (canvasFullScreen.value) {
+        Modifier.fillMaxSize()
+    } else {
+        Modifier.fillMaxWidth().height(mainActivity.windowHeight.times(0.33).dp)
+    }
     Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(mainActivity.windowHeight.times(0.33).dp)
+        modifier = canvasModifier.pointerInput(Unit) {
+            detectTapGestures (
+                onDoubleTap = { canvasFullScreen.value = !canvasFullScreen.value }
+            )
+        }
     ) {
         if (canvasRefresh.value > 0){
-            Log.i(TAG, "Canvas: $size")
+            //Log.i(TAG, "Canvas: $size")
             val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
             eventFLog.let {
-                Log.i(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
+                //Log.i(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
                 val canvasHeight = size.height
                 val yMid = canvasHeight/2F
                 drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
