@@ -19,6 +19,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.math.absoluteValue
 
+const val SAVE_MINRECORDS = 500
+
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
     var count: Int = 0
 
@@ -182,8 +184,8 @@ class SensorMa(val theSensor: Sensor) {
         return info
     }
 
-    suspend fun getTextDataAndClear(): String {
-        if (eventLog.size < 1000) {
+    suspend fun getTextDataAndClear(minRecords: Int = 1000): String {
+        if (eventLog.size < minRecords) {
             return ""
         }
         var sData = ""
@@ -298,7 +300,7 @@ class SensorsMa(private val sensorsType: Int) {
 
     private suspend fun saveEvents(fSave: File) {
         sensorMa?.let {
-            val sSensorData = it.getTextDataAndClear()
+            val sSensorData = it.getTextDataAndClear(SAVE_MINRECORDS)
             if (sSensorData.isNotEmpty()) {
                 fSave.appendText(sSensorData)
             }
