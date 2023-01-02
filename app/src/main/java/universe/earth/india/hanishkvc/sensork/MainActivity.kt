@@ -193,14 +193,15 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
         modifier = Modifier.fillMaxWidth().height(mainActivity.windowHeight.times(0.33).dp)
     ) {
         Log.i(TAG, "Canvas: $size")
+        val canvasWidth = size.width
         val canvasHeight = size.height
         val yMid = canvasHeight/2F
         drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
         val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
         val dataHeight = (max - min)*1.4F
         withTransform({
-            scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
-            translate(top = yMid)
+            scale(scaleX = (canvasWidth*0.8F)/SAVE_MINRECORDS, scaleY = canvasHeight/dataHeight)
+            translate(top = yMid, left = canvasWidth*0.2F)
         }) {
             for((i,fva) in eventFLog.withIndex()) {
                 val fx = i.toFloat()
