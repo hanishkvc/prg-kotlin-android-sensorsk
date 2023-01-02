@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.math.absoluteValue
 
-const val SAVE_MINRECORDS = 500
+const val SAVE_MINRECORDS = 1000
 
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
     var count: Int = 0

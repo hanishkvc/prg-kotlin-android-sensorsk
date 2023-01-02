@@ -29,6 +29,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +40,6 @@ import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -184,17 +184,17 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, refreshMe: MutableState<Int>) {
+fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
-    LaunchedEffect(refreshMe) {
+    LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
-            delay(5000)
+            delay(1000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
             canvasRefresh.value += 1
-            Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever force a canvasRefresh: ${eventFLog.size}")
+            Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:${canvasRefresh}: Got newer sensorevents list ${eventFLog.size}")
         }
     }
     Canvas(
@@ -214,7 +214,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, refreshMe: Muta
                 val dataHeight = (max - min)*1.4F
                 withTransform({
                     scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
-                    translate(top = yMid, left = size.width*0.25F)
+                    translate(top = yMid)
                 }) {
                     for((i,fva) in it.withIndex()) {
                         val fx = i.toFloat()
@@ -257,7 +257,7 @@ fun DrawMainContent(
     refreshMe: MutableState<Int>
 ) {
     if (refreshMe.value < 0) return
-    MainContent(name, sensorsMa, mainActivity, refreshMe)
+    MainContent(name, sensorsMa, mainActivity)
 }
 
 @Composable
@@ -265,7 +265,6 @@ fun MainContent(
     name: String,
     sensorsMa: SensorsMa?,
     mainActivity: MainActivity?,
-    refreshMe: MutableState<Int>,
 ) {
     var updateStatusCounter by remember {
         mutableStateOf( 0 )
@@ -302,13 +301,12 @@ fun MainContent(
         }
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
-            PlotData(sensorsMa, mainActivity, refreshMe)
+            PlotData(sensorsMa, mainActivity)
             ShowTextStatus(sensorsMa, this)
         }
     }
 }
 
-/*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -316,4 +314,3 @@ fun DefaultPreview() {
         MainContent("Android", null, null)
     }
 }
-*/
