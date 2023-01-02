@@ -193,14 +193,12 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     var canvasRefresh = remember { mutableStateOf(0) }
     LaunchedEffect(mainActivity.refreshMe) {
         Log.i(TAG, "Canvas:Helper:Base: Do I ever reach here")
-        withContext(Dispatchers.IO) {
-            Log.i(TAG, "Canvas:Helper:IO: Do I ever reach here")
-            eventFLog.clear()
-            for (sev in sensorsMa.sensorMa!!.eventFLog) {
-                eventFLog.add(sev.clone())
-            }
-            canvasRefresh.value += 1
+        eventFLog.clear()
+        for (sev in sensorsMa.sensorMa!!.eventFLog) {
+            eventFLog.add(sev.clone())
         }
+        canvasRefresh.value += 1
+        Log.i(TAG, "Canvas:Helper:Base: Do I ever force a canvasRefresh")
     }
     Canvas(
         modifier = Modifier
