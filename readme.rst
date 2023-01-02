@@ -26,13 +26,19 @@ A long time back, I remember there being a google's android app for monitoring
 sensors in a android device or so, now I am not able to find/recall the same,
 so created this, for some experimentation I was doing.
 
-Usage
-######
+App (Android version) Usage
+#############################
+
+The android program currently doesnt take care of handling device screen
+auto rotation wrt gui programs, so disable auto screen rotate in the settings.
 
 Plot
 ======
 
 Each captured sensor data event corresponds to one entry along the x-axis.
+By default the available data set is auto scaled/expanded along the x-axis,
+if the number of data records is less than the number of pixels on the screen
+along xaxis.
 
 Y-axis plots the sensed value wrt all the parameters captured by the sensor.
 The y-axis is autoscaled based on the min and max value seen in the captured
@@ -62,6 +68,6 @@ wrt the plot.
 Pressing back button, when a sensor is already selected, will clear the
 sensor selection. Pressing back button once again will quit the app.
 
-When user goes back and reselects the same sensor again, it takes care of
-reseting the auto scaling wrt y axis to start afresh.
+When user reselects the same(again)/different sensor, it takes care of reseting
+the auto scaling wrt y axis to start afresh.
 
