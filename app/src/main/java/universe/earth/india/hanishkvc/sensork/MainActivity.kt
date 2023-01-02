@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -185,20 +184,20 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
+fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, refreshMe: MutableState<Int>) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
     val textMeasure = rememberTextMeasurer()
     val eventFLog: ArrayList<FloatArray> = arrayListOf()
     var canvasRefresh = remember { mutableStateOf(0) }
-    LaunchedEffect(mainActivity.refreshMe) {
-        Log.i(TAG, "Canvas:Helper:Base: Do I ever reach here")
+    LaunchedEffect(refreshMe) {
+        Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever reach here")
         eventFLog.clear()
         for (sev in sensorsMa.sensorMa!!.eventFLog) {
             eventFLog.add(sev.clone())
         }
         canvasRefresh.value += 1
-        Log.i(TAG, "Canvas:Helper:Base: Do I ever force a canvasRefresh")
+        Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever force a canvasRefresh")
     }
     Canvas(
         modifier = Modifier
@@ -259,7 +258,7 @@ fun DrawMainContent(
     refreshMe: MutableState<Int>
 ) {
     if (refreshMe.value < 0) return
-    MainContent(name, sensorsMa, mainActivity)
+    MainContent(name, sensorsMa, mainActivity, refreshMe)
 }
 
 @Composable
@@ -267,6 +266,7 @@ fun MainContent(
     name: String,
     sensorsMa: SensorsMa?,
     mainActivity: MainActivity?,
+    refreshMe: MutableState<Int>,
 ) {
     var updateStatusCounter by remember {
         mutableStateOf( 0 )
@@ -303,12 +303,13 @@ fun MainContent(
         }
         Divider(color = Color.Black)
         if (updateStatusCounter > 0) {
-            PlotData(sensorsMa, mainActivity)
+            PlotData(sensorsMa, mainActivity, refreshMe)
             ShowTextStatus(sensorsMa, this)
         }
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -316,3 +317,4 @@ fun DefaultPreview() {
         MainContent("Android", null, null)
     }
 }
+*/
