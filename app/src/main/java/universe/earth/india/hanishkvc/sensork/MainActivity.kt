@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.time.LocalDateTime
@@ -191,20 +192,23 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, refreshMe: Muta
     val eventFLog: ArrayList<FloatArray> = arrayListOf()
     var canvasRefresh = remember { mutableStateOf(0) }
     LaunchedEffect(refreshMe) {
-        Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever reach here")
-        eventFLog.clear()
-        for (sev in sensorsMa.sensorMa!!.eventFLog) {
-            eventFLog.add(sev.clone())
+        while (true) {
+            delay(5000)
+            Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever reach here")
+            eventFLog.clear()
+            for (sev in sensorsMa.sensorMa!!.eventFLog) {
+                eventFLog.add(sev.clone())
+            }
+            canvasRefresh.value += 1
+            Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever force a canvasRefresh: ${eventFLog.size}")
         }
-        canvasRefresh.value += 1
-        Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:Base: Do I ever force a canvasRefresh")
     }
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
             .height(mainActivity.windowHeight.times(0.33).dp)
     ) {
-        canvasRefresh.let {
+        if (canvasRefresh.value > 0){
             Log.i(TAG, "Canvas: $size")
             eventFLog.let {
                 Log.i(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
