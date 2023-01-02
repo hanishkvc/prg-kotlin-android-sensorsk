@@ -39,6 +39,7 @@ import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -186,7 +187,7 @@ fun testCanvasDraw(ds: DrawScope) {
 fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
-    val eventFLog = sensorsMa.sensorMa!!.eventFLog
+    val eventFLog = sensorsMa.sensorMa!!.eventFLog.clone() as ArrayList<FloatArray>
     val textMeasure = rememberTextMeasurer()
     Canvas(
         modifier = Modifier.fillMaxWidth().height(mainActivity.windowHeight.times(0.33).dp)
