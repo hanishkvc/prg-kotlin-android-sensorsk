@@ -180,15 +180,12 @@ fun testCanvasDraw(ds: DrawScope) {
     }
 }
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun ShowData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: ColumnScope) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
     Log.d(TAG, "Canvas:ParentPlotData")
-    val textMeasure = rememberTextMeasurer()
     val canvasRefresh = remember { mutableStateOf(1) }
-    val canvasFullScreen = remember { mutableStateOf(false) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
             delay(1000)
@@ -197,6 +194,18 @@ fun ShowData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
             Log.d(TAG, "Canvas:Helper:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
         }
     }
+    if (canvasRefresh.value > 0){
+        ShowDataPlot(sensorsMa, mainActivity, canvasRefresh)
+        //testCanvasDraw(ds = this)
+        ShowDataText(sensorsMa, columnScope)
+    }
+}
+
+@OptIn(ExperimentalTextApi::class)
+@Composable
+fun ShowDataPlot(sensorsMa: SensorsMa, mainActivity: MainActivity, canvasRefresh: MutableState<Int>) {
+    val textMeasure = rememberTextMeasurer()
+    val canvasFullScreen = remember { mutableStateOf(false) }
     val canvasModifier = if (canvasFullScreen.value) {
         Modifier.fillMaxSize()
     } else {
@@ -204,56 +213,53 @@ fun ShowData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
             .fillMaxWidth()
             .height(mainActivity.windowHeight.times(0.33).dp)
     }
-    if (canvasRefresh.value > 0){
-        Canvas(
-            modifier = canvasModifier.pointerInput(Unit) {
-                detectTapGestures (
-                    onDoubleTap = { canvasFullScreen.value = !canvasFullScreen.value }
-                )
-            }
-        ) {
-            Log.d(TAG, "Canvas:${canvasRefresh.value}: $size")
-            val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
-            eventFLog.let {
-                //Log.d(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
-                val canvasHeight = size.height
-                val yMid = canvasHeight/2F
-                drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
-                val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
-                val dataHeight = (max - min)*1.4F
-                val dataWidth = eventFLog.size*1.1F
-                val scaleX = size.width/dataWidth
-                withTransform({
-                    scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
-                    translate(top = yMid)
-                }) {
-                    for(i in 1 until it.size) {
-                        val fva2 = it[i]
-                        val fva1 = it[i-1]
-                        val fx2 = i.toFloat() * scaleX
-                        val fx1 = (i-1).toFloat() * scaleX
-                        for(j in fva2.indices) {
-                            val fy2 = fva2[j]
-                            val fy1 = fva1[j]
-                            val color = when (j) {
-                                0 -> Color.Red
-                                1 -> Color.Green
-                                2 -> Color.Blue
-                                else -> Color.Black
-                            }
-                            drawLine(color, start = Offset(x=fx1, y=fy1), end = Offset(x=fx2, y=fy2))
+    Canvas(
+        modifier = canvasModifier.pointerInput(Unit) {
+            detectTapGestures (
+                onDoubleTap = { canvasFullScreen.value = !canvasFullScreen.value }
+            )
+        }
+    ) {
+        Log.d(TAG, "Canvas:${canvasRefresh.value}: $size")
+        val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
+        eventFLog.let {
+            //Log.d(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
+            val canvasHeight = size.height
+            val yMid = canvasHeight/2F
+            drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
+            val (min,max) = sensorsMa.sensorMa!!.getSEValuesMinMax()
+            val dataHeight = (max - min)*1.4F
+            val dataWidth = eventFLog.size*1.1F
+            val scaleX = size.width/dataWidth
+            withTransform({
+                scale(scaleX = 1F, scaleY = canvasHeight/dataHeight)
+                translate(top = yMid)
+            }) {
+                for(i in 1 until it.size) {
+                    val fva2 = it[i]
+                    val fva1 = it[i-1]
+                    val fx2 = i.toFloat() * scaleX
+                    val fx1 = (i-1).toFloat() * scaleX
+                    for(j in fva2.indices) {
+                        val fy2 = fva2[j]
+                        val fy1 = fva1[j]
+                        val color = when (j) {
+                            0 -> Color.Red
+                            1 -> Color.Green
+                            2 -> Color.Blue
+                            else -> Color.Black
                         }
+                        drawLine(color, start = Offset(x=fx1, y=fy1), end = Offset(x=fx2, y=fy2))
                     }
                 }
             }
         }
-        //testCanvasDraw(ds = this)
-        ShowTextStatus(sensorsMa, columnScope)
     }
+
 }
 
 @Composable
-fun ShowTextStatus(sensorsMa: SensorsMa?, columnScope: ColumnScope) {
+fun ShowDataText(sensorsMa: SensorsMa?, columnScope: ColumnScope) {
     val status = sensorsMa?.status() ?: return
     with(columnScope) {
         Text(
