@@ -254,15 +254,14 @@ fun ShowData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
 
 @Composable
 fun ShowTextStatus(sensorsMa: SensorsMa?, columnScope: ColumnScope) {
+    val status = sensorsMa?.status() ?: return
     with(columnScope) {
-        sensorsMa?.status()?.let {
-            Text(
-                text = it,
-                modifier = Modifier
-                    .weight(0.33f)
-                    .verticalScroll(rememberScrollState())
-            )
-        }
+        Text(
+            text = status,
+            modifier = Modifier
+                .weight(0.33f)
+                .verticalScroll(rememberScrollState())
+        )
     }
 }
 
