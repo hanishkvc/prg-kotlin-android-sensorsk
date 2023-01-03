@@ -41,11 +41,13 @@ import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.concurrent.timerTask
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
+const val REFRESHME_TIMER_MSEC = 2000L
 
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
@@ -58,7 +60,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        refreshMe = mutableStateOf(0)
+        refreshMe = mutableStateOf(1)
         sensorsMa = SensorsMa(Sensor.TYPE_ALL)
         sensorsMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
         val fileId = sTimeStampHuman()
@@ -184,14 +186,15 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun PlotData(sensorsMa: SensorsMa?, windowHeight: Int, columnScope: ColumnScope) {
+fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: ColumnScope) {
     sensorsMa?.sensorMa ?: return
+    mainActivity ?: return
     Log.d(TAG, "Canvas:ParentPlotData")
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
     var canvasRefreshed = remember { mutableStateOf(0) }
     var canvasFullScreen = remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
             delay(1000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
@@ -204,7 +207,7 @@ fun PlotData(sensorsMa: SensorsMa?, windowHeight: Int, columnScope: ColumnScope)
     } else {
         Modifier
             .fillMaxWidth()
-            .height(windowHeight.times(0.33).dp)
+            .height(mainActivity.windowHeight.times(0.33).dp)
     }
     if (canvasRefresh.value > canvasRefreshed.value){
         Canvas(
@@ -276,8 +279,11 @@ fun DrawMainContent(
     mainActivity: MainActivity?,
     refreshMe: MutableState<Int>
 ) {
-    if (refreshMe.value < 0) return
-    MainContent(name, sensorsMa, mainActivity)
+    var refreshMeD = remember{ mutableStateOf(0) }
+    if (refreshMe.value > refreshMeD.value) {
+        MainContent(name, sensorsMa, mainActivity)
+        refreshMeD.value += 1
+    }
 }
 
 @Composable
@@ -321,7 +327,7 @@ fun MainContent(
             }
         }
         Divider(color = Color.Black)
-        PlotData(sensorsMa, mainActivity?.windowHeight ?: 800, this)
+        PlotData(sensorsMa, mainActivity, this)
     }
 }
 
