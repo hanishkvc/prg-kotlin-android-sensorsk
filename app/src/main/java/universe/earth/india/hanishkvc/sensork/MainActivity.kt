@@ -182,7 +182,7 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: ColumnScope) {
+fun ShowData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: ColumnScope) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
     Log.d(TAG, "Canvas:ParentPlotData")
@@ -314,7 +314,7 @@ fun MainContent(
             }
         }
         Divider(color = Color.Black)
-        PlotData(sensorsMa, mainActivity, this)
+        ShowData(sensorsMa, mainActivity, this)
     }
 }
 
