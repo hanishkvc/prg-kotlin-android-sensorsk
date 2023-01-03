@@ -55,6 +55,20 @@ the program should always remain in potrait mode. However for some reason,
 if it keeps changing orientation on your device, remember to disable auto
 screen rotation on your device settings.
 
+Sampling Rate
+==============
+
+The program by default hints Android to capture the sensor data at a low
+sampling rate, to help with power consumption as well as to help with keeping
+the amount of data captured by default to be a minimum. However when device
+moment is detected, android may, based on kind of movement, switch to a high
+sampling rate for some inbetween periods.
+
+The time related status line as part of the sensor summary text data,
+indicates the relative time delta between sensor events, in the order of
+min, avg and max in terms of milliseconds.
+
+
 Plot
 ======
 
