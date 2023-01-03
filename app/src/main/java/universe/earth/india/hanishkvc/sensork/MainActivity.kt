@@ -196,6 +196,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     mainActivity ?: return
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
+    var canvasRefreshed = remember { mutableStateOf(0) }
     var canvasFullScreen = remember { mutableStateOf(false) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
@@ -208,7 +209,9 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     var canvasModifier = if (canvasFullScreen.value) {
         Modifier.fillMaxSize()
     } else {
-        Modifier.fillMaxWidth().height(mainActivity.windowHeight.times(0.33).dp)
+        Modifier
+            .fillMaxWidth()
+            .height(mainActivity.windowHeight.times(0.33).dp)
     }
     Canvas(
         modifier = canvasModifier.pointerInput(Unit) {
@@ -217,7 +220,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
             )
         }
     ) {
-        if (canvasRefresh.value > 0){
+        if (canvasRefresh.value > canvasRefreshed.value){
             Log.d(TAG, "Canvas:${canvasRefresh.value}: $size")
             val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
             eventFLog.let {
@@ -252,6 +255,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
                     }
                 }
             }
+            canvasRefreshed.value += 1
         }
         //testCanvasDraw(ds = this)
     }
