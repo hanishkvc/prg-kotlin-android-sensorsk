@@ -22,11 +22,16 @@ Android app color codes upto 3 parameters wrt any given sensor with R, G, B.
 However if there are more than 3 parameters being monitored/provided by a
 sensor, then it will plot the remaining parameters with black color.
 
+One can switch between sensors if required. At any given time, currently,
+only one sensor can be selected. The csv file will contain sensor data wrt
+all the sensors selected, for the duration for which they were selected
+respectively.
+
 There is also a python helper script to plot the captured sensor data. If
 the user had switched sensors in a given run of the android app, then the
 csv file would have data about multiple sensors, the logic will plot data
 wrt each sensor seperately. It also prints some useful summary wrt data in
-the console.
+the console. A image is captured wrt data plot under /tmp/pyplotdata.png
 
 Misc: A long time back, I vaguely remember there being a google's android app
 for monitoring sensors in a android device or so, however now I am not able to
@@ -67,9 +72,21 @@ CSV file
 ==========
 
 THe logic by default saves/logs sensor data into csv file, at a granularity
-of once every 1000 records have been captured. So for now remember to capture
-atleast 1000 records wrt any sensor, before switching them, if you want to
-save the corresponding sensor data into csv file.
+of 1000+ records. The saving to csv is triggered in the background as a
+parallel activity, which runs once every 5 seconds or so, so one needs to
+wait for atleast 7-10 seconds after 1000+ records have been captured, for
+the same to get written to the csv file, just to be on safe side. IE before
+going back or switching sensors.
+
+NOTE: One can look at the sensor details including data related details
+which also contains how many samples have been captured, in the sensor
+data section in the bottom 1/3rd of the screen, by scrolling wrt sensor
+and its data summary details.
+
+One will see the plot in the screen change, as the background save to csv
+logic saves the data and clears the in memory buffer. Wait for few seconds
+after the plot in the screen changes, before switching sensors or going
+back (and inturn thus clearing the sensor selection).
 
 The CSV file is maintained in the external/emulated storage area alloted
 for the android application wrt its files.
@@ -86,4 +103,14 @@ sensor selection. Pressing back button once again will quit the app.
 
 When user reselects the same(again)/different sensor, it takes care of reseting
 the auto scaling wrt y axis to start afresh.
+
+
+Python helper script
+######################
+
+Currently as the Android sensor data capture dont support a fixed sampling
+rate, and it can switch between low and high sampling rates, a fft of the
+captured sample data is not done. NOTE: One can use the timestamp info
+stored with each record entry, to get the sample rate wrt adjacent samples,
+as well as on average over a given window of data.
 
