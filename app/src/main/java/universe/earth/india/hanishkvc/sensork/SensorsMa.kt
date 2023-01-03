@@ -234,6 +234,7 @@ class SensorsMa(private val sensorsType: Int) {
     var sensorsList: ArrayList<Sensor> = arrayListOf()
     var sensorMa: SensorMa? = null
     var locationMa: LocationMa = LocationMa()
+    var lastSaveTimeStamp: String = ""
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -318,7 +319,7 @@ class SensorsMa(private val sensorsType: Int) {
         }
         var info = ""
         info += sensorMa?.status()
-        info += "\n"
+        info += "LastSave: $lastSaveTimeStamp\n"
         info += locationMa.status()
         return info
     }
@@ -328,6 +329,7 @@ class SensorsMa(private val sensorsType: Int) {
             val sSensorData = it.getTextDataAndClear(SAVE_MINRECORDS)
             if (sSensorData.isNotEmpty()) {
                 fSave.appendText(sSensorData)
+                lastSaveTimeStamp = sTimeStampHuman(true)
             }
         }
         val sLocationData = locationMa.getTextDataAndClear()

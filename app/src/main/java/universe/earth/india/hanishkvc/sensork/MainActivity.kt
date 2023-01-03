@@ -64,8 +64,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         refreshMe = mutableStateOf(0)
         sensorsMa = SensorsMa(Sensor.TYPE_ALL)
         sensorsMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
-        val curDateTime = LocalDateTime.now()
-        val fileId = DateTimeFormatter.ofPattern("yyyyMMddHHmm").format(curDateTime)
+        val fileId = sTimeStampHuman()
         getExternalFilesDir(null)?.let {
             val fPath = Path(it.absolutePath,"events.$fileId.csv.txt")
             val fAPath = fPath.absolutePathString()

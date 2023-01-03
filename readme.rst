@@ -89,20 +89,27 @@ CSV file
 
 THe logic by default saves/logs sensor data into csv file, at a granularity
 of 1000+ records. The saving to csv is triggered in the background as a
-parallel activity, which runs once every 5 seconds or so, so one needs to
-wait for atleast 7-10 seconds after 1000+ records have been captured, for
-the same to get written to the csv file, just to be on safe side. IE before
-going back or switching sensors.
+parallel activity, which runs once every n seconds or so.
+
+So captured data gets saved into csv only at periodic intervals, provided
+there is sufficient amount of data. So one needs to wait for 1000+ records
+to be captured wrt a sensor, and inturn the background save logic to trigger
+for the same to get written to the csv file.
+
+One can look at the LastSave datetime info shown along with SensorData
+summary towards the bottom of the screen to confirm that the captured data
+has been saved, before going back (which inturn clears the sensor selection)
+or switching to a different sensor. You may have to scroll down wrt summary
+text to see the same.
 
 NOTE: One can look at the sensor details including data related details
 which also contains how many samples have been captured, in the sensor
 data section in the bottom 1/3rd of the screen, by scrolling wrt sensor
 and its data summary details.
 
-One will see the plot in the screen change, as the background save to csv
-logic saves the data and clears the in memory buffer. Wait for few seconds
-after the plot in the screen changes, before switching sensors or going
-back (and inturn thus clearing the sensor selection).
+NOTE: One will also see the plot in the screen change, as the background
+save to csv logic saves the data and clears the in memory buffer. The save
+may complete few seconds after that.
 
 The CSV file is maintained in the external/emulated storage area alloted
 for the android application wrt its files.
