@@ -23,6 +23,7 @@ const val SAVE_MINRECORDS = 1000
 
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
     var count: Int = 0
+    var prevValue: Float = Float.NaN
 
     fun update(value: Float) {
         sum += value
@@ -34,6 +35,16 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
             max = value
         }
         count += 1
+    }
+
+    fun updateAbs2Rel(value: Float) {
+        if (prevValue.isNaN()) {
+            prevValue = value
+        } else {
+            val delta = value - prevValue
+            update(delta)
+            prevValue = value
+        }
     }
 
     fun avg(): Float {
@@ -115,6 +126,7 @@ class SensorMa(val theSensor: Sensor) {
     private var eventLog = arrayListOf<String>()
     private var seValues = arrayListOf<FDataStats>()
     private val bootEpochTime = System.currentTimeMillis() - (SystemClock.elapsedRealtimeNanos()/DIV_NANO2MILLI)
+    private var timeStats = FDataStats()
 
     init {
         Log.i(TAG, "SensorMa:Init: CurEpochTime:${System.currentTimeMillis()}, CurElapsedTime:${SystemClock.elapsedRealtimeNanos()/DIV_NANO2MILLI}")
@@ -147,6 +159,7 @@ class SensorMa(val theSensor: Sensor) {
     suspend fun sensorEvent(se: SensorEvent): String {
         val sName = se.sensor.name.replace(' ', '-')
         val curEpochTime = bootEpochTime + (se.timestamp/DIV_NANO2MILLI)
+        timeStats.updateAbs2Rel(curEpochTime.toFloat())
         var sData = "$sName $curEpochTime"
         for ((i,f) in se.values.withIndex()) {
             seValuesUpdate(i, f)
@@ -182,6 +195,7 @@ class SensorMa(val theSensor: Sensor) {
         info += "\t$sAvg\n"
         info += "\t$sMax\n"
         info += "\t$sCnt\n"
+        info += "\tTime ${timeStats.min} ${timeStats.avg()} ${timeStats.max}"
         return info
     }
 
