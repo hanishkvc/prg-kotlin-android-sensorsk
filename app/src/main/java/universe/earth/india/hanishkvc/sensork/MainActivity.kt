@@ -40,8 +40,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
 import java.util.*
-import kotlin.concurrent.schedule
-import kotlin.concurrent.timerTask
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
@@ -189,8 +187,8 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
     mainActivity ?: return
     Log.d(TAG, "Canvas:ParentPlotData")
     val textMeasure = rememberTextMeasurer()
-    var canvasRefresh = remember { mutableStateOf(1) }
-    var canvasFullScreen = remember { mutableStateOf(false) }
+    val canvasRefresh = remember { mutableStateOf(1) }
+    val canvasFullScreen = remember { mutableStateOf(false) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
             delay(1000)
@@ -199,7 +197,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
             Log.d(TAG, "Canvas:Helper:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
         }
     }
-    var canvasModifier = if (canvasFullScreen.value) {
+    val canvasModifier = if (canvasFullScreen.value) {
         Modifier.fillMaxSize()
     } else {
         Modifier
