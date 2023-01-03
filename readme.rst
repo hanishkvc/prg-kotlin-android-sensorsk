@@ -50,8 +50,10 @@ Images
 App (Android version) Usage
 #############################
 
-The android program currently doesnt take care of handling device screen
-auto rotation wrt gui programs, so disable auto screen rotate in the settings.
+The android program is currently programmed to work in potrait mode. Ideally
+the program should always remain in potrait mode. However for some reason,
+if it keeps changing orientation on your device, remember to disable auto
+screen rotation on your device settings.
 
 Plot
 ======
