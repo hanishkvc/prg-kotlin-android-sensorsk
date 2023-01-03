@@ -48,7 +48,7 @@ import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
-const val REFRESHME_TIMER_MSEC = 500L
+const val REFRESHME_TIMER_MSEC = 2000L
 
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
@@ -168,7 +168,7 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
     mainActivity?.let {
         if (it.timerTask == null) {
             it.timerTask = Timer().schedule(REFRESHME_TIMER_MSEC, REFRESHME_TIMER_MSEC) {
-                it.refreshMe.value += 1
+                //it.refreshMe.value += 1
             }
         }
     }
@@ -194,6 +194,7 @@ fun testCanvasDraw(ds: DrawScope) {
 fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
+    Log.d(TAG, "Canvas:ParentPlotData: ${mainActivity.refreshMe.value}")
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
     var canvasRefreshed = remember { mutableStateOf(0) }
@@ -213,14 +214,14 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
             .fillMaxWidth()
             .height(mainActivity.windowHeight.times(0.33).dp)
     }
-    Canvas(
-        modifier = canvasModifier.pointerInput(Unit) {
-            detectTapGestures (
-                onDoubleTap = { canvasFullScreen.value = !canvasFullScreen.value }
-            )
-        }
-    ) {
-        if (canvasRefresh.value > canvasRefreshed.value){
+    if (canvasRefresh.value > canvasRefreshed.value){
+        Canvas(
+            modifier = canvasModifier.pointerInput(Unit) {
+                detectTapGestures (
+                    onDoubleTap = { canvasFullScreen.value = !canvasFullScreen.value }
+                )
+            }
+        ) {
             Log.d(TAG, "Canvas:${canvasRefresh.value}: $size")
             val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
             eventFLog.let {
