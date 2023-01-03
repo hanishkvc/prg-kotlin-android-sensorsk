@@ -202,7 +202,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
             delay(1000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
             canvasRefresh.value += 1
-            Log.i(TAG, "Canvas:Helper:${mainActivity.refreshMe}:${canvasRefresh}: Got newer sensorevents list ${eventFLog.size}")
+            Log.d(TAG, "Canvas:Helper:mR${mainActivity.refreshMe.value}:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
         }
     }
     var canvasModifier = if (canvasFullScreen.value) {
@@ -218,10 +218,10 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
         }
     ) {
         if (canvasRefresh.value > 0){
-            //Log.i(TAG, "Canvas: $size")
+            Log.d(TAG, "Canvas:${canvasRefresh.value}: $size")
             val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
             eventFLog.let {
-                //Log.i(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
+                //Log.d(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
                 val canvasHeight = size.height
                 val yMid = canvasHeight/2F
                 drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)

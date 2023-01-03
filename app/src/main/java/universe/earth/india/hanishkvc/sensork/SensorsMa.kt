@@ -20,6 +20,7 @@ import java.io.File
 import kotlin.math.absoluteValue
 
 const val SAVE_MINRECORDS = 1000
+const val SAVE_CHECKTIME = 10000L
 
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
     var count: Int = 0
@@ -218,8 +219,8 @@ class SensorMa(val theSensor: Sensor) {
     }
 
     suspend fun updateEventFLogBackup(): ArrayList<FloatArray> {
-        eventFLogBackup = arrayListOf<FloatArray>()
         elMutex.withLock {
+            eventFLogBackup = arrayListOf<FloatArray>()
             for (sev in eventFLog) {
                 eventFLogBackup.add(sev.clone())
             }
@@ -340,7 +341,7 @@ class SensorsMa(private val sensorsType: Int) {
         withContext(Dispatchers.IO) {
             val fSave = File(fPath)
             while (true) {
-                delay(5000)
+                delay(SAVE_CHECKTIME)
                 saveEvents(fSave)
             }
         }
