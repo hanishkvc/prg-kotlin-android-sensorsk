@@ -285,9 +285,6 @@ fun MainContent(
     sensorsMa: SensorsMa?,
     mainActivity: MainActivity?,
 ) {
-    var updateStatusCounter by remember {
-        mutableStateOf( 0 )
-    }
     Column {
         Text(
             text = name,
@@ -310,7 +307,6 @@ fun MainContent(
                     Button(
                         onClick = {
                             handleSensorSelection(mainActivity, sensorsMa, item)
-                            updateStatusCounter += 1
                             mainActivity?.uiNavPos = 1
                         },
                     ) {
