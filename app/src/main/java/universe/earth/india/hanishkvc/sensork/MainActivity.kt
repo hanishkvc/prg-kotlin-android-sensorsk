@@ -47,20 +47,18 @@ import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
-const val REFRESHME_TIMER_MSEC = 5000L
 
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
     val bMultipleSensors: Boolean = false
     private lateinit var sensorsMa: SensorsMa
     lateinit var refreshMe: MutableState<Int>
-    var timerTask: TimerTask? = null
     var windowHeight: Int = 800
     var uiNavPos: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        refreshMe = mutableStateOf(1)
+        refreshMe = mutableStateOf(0)
         sensorsMa = SensorsMa(Sensor.TYPE_ALL)
         sensorsMa.setSensorManager(getSystemService(SENSOR_SERVICE) as SensorManager)
         val fileId = sTimeStampHuman()
@@ -165,11 +163,7 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
     if (selSensor == null) return
     sensorsMa.setSensorMa(selSensor, mainActivity)
     mainActivity?.let {
-        if (it.timerTask == null) {
-            it.timerTask = Timer().schedule(REFRESHME_TIMER_MSEC, REFRESHME_TIMER_MSEC) {
-                it.refreshMe.value += 1
-            }
-        }
+        it.refreshMe.value += 1
     }
 }
 
@@ -195,11 +189,11 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
     mainActivity ?: return
     Log.d(TAG, "Canvas:ParentPlotData")
     val textMeasure = rememberTextMeasurer()
-    var canvasRefresh = remember { mutableStateOf(0) }
+    var canvasRefresh = remember { mutableStateOf(1) }
     var canvasFullScreen = remember { mutableStateOf(false) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
-            delay(5000)
+            delay(1000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
             canvasRefresh.value += 1
             Log.d(TAG, "Canvas:Helper:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
