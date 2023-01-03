@@ -39,8 +39,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import universe.earth.india.hanishkvc.sensork.ui.theme.SensorKTheme
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.io.path.Path
@@ -48,7 +46,6 @@ import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
-const val REFRESHME_TIMER_MSEC = 2000L
 
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
@@ -166,11 +163,7 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
     if (selSensor == null) return
     sensorsMa.setSensorMa(selSensor, mainActivity)
     mainActivity?.let {
-        if (it.timerTask == null) {
-            it.timerTask = Timer().schedule(REFRESHME_TIMER_MSEC, REFRESHME_TIMER_MSEC) {
-                //it.refreshMe.value += 1
-            }
-        }
+        it.refreshMe.value += 1
     }
 }
 
@@ -191,20 +184,19 @@ fun testCanvasDraw(ds: DrawScope) {
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
+fun PlotData(sensorsMa: SensorsMa?, windowHeight: Int, columnScope: ColumnScope) {
     sensorsMa?.sensorMa ?: return
-    mainActivity ?: return
-    Log.d(TAG, "Canvas:ParentPlotData: ${mainActivity.refreshMe.value}")
+    Log.d(TAG, "Canvas:ParentPlotData")
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
     var canvasRefreshed = remember { mutableStateOf(0) }
     var canvasFullScreen = remember { mutableStateOf(false) }
-    LaunchedEffect(mainActivity.refreshMe) {
+    LaunchedEffect(Unit) {
         while (true) {
             delay(1000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
             canvasRefresh.value += 1
-            Log.d(TAG, "Canvas:Helper:mR${mainActivity.refreshMe.value}:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
+            Log.d(TAG, "Canvas:Helper:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
         }
     }
     var canvasModifier = if (canvasFullScreen.value) {
@@ -212,7 +204,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
     } else {
         Modifier
             .fillMaxWidth()
-            .height(mainActivity.windowHeight.times(0.33).dp)
+            .height(windowHeight.times(0.33).dp)
     }
     if (canvasRefresh.value > canvasRefreshed.value){
         Canvas(
@@ -259,6 +251,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?) {
             canvasRefreshed.value += 1
         }
         //testCanvasDraw(ds = this)
+        ShowTextStatus(sensorsMa, columnScope)
     }
 }
 
@@ -328,10 +321,7 @@ fun MainContent(
             }
         }
         Divider(color = Color.Black)
-        if (updateStatusCounter > 0) {
-            PlotData(sensorsMa, mainActivity)
-            ShowTextStatus(sensorsMa, this)
-        }
+        PlotData(sensorsMa, mainActivity?.windowHeight ?: 800, this)
     }
 }
 
