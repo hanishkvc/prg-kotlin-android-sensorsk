@@ -47,7 +47,7 @@ import kotlin.io.path.absolutePathString
 
 const val TAG = "SensorK"
 const val HEADING_SENSORS = "Sensors"
-const val REFRESHME_TIMER_MSEC = 2000L
+const val REFRESHME_TIMER_MSEC = 5000L
 
 
 class MainActivity : ComponentActivity(), SensorEventListener, LocationListener {
@@ -165,7 +165,11 @@ fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, sel
     if (selSensor == null) return
     sensorsMa.setSensorMa(selSensor, mainActivity)
     mainActivity?.let {
-        it.refreshMe.value += 1
+        if (it.timerTask == null) {
+            it.timerTask = Timer().schedule(REFRESHME_TIMER_MSEC, REFRESHME_TIMER_MSEC) {
+                it.refreshMe.value += 1
+            }
+        }
     }
 }
 
@@ -192,11 +196,10 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
     Log.d(TAG, "Canvas:ParentPlotData")
     val textMeasure = rememberTextMeasurer()
     var canvasRefresh = remember { mutableStateOf(0) }
-    var canvasRefreshed = remember { mutableStateOf(0) }
     var canvasFullScreen = remember { mutableStateOf(false) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
-            delay(1000)
+            delay(5000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
             canvasRefresh.value += 1
             Log.d(TAG, "Canvas:Helper:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
@@ -209,7 +212,7 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
             .fillMaxWidth()
             .height(mainActivity.windowHeight.times(0.33).dp)
     }
-    if (canvasRefresh.value > canvasRefreshed.value){
+    if (canvasRefresh.value > 0){
         Canvas(
             modifier = canvasModifier.pointerInput(Unit) {
                 detectTapGestures (
@@ -251,7 +254,6 @@ fun PlotData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: Co
                     }
                 }
             }
-            canvasRefreshed.value += 1
         }
         //testCanvasDraw(ds = this)
         ShowTextStatus(sensorsMa, columnScope)
@@ -279,11 +281,8 @@ fun DrawMainContent(
     mainActivity: MainActivity?,
     refreshMe: MutableState<Int>
 ) {
-    var refreshMeD = remember{ mutableStateOf(0) }
-    if (refreshMe.value > refreshMeD.value) {
-        MainContent(name, sensorsMa, mainActivity)
-        refreshMeD.value += 1
-    }
+    if (refreshMe.value < 0)  return
+    MainContent(name, sensorsMa, mainActivity)
 }
 
 @Composable
