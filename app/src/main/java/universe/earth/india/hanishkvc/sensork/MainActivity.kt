@@ -184,19 +184,18 @@ fun testCanvasDraw(ds: DrawScope) {
 fun ShowData(sensorsMa: SensorsMa?, mainActivity: MainActivity?, columnScope: ColumnScope) {
     sensorsMa?.sensorMa ?: return
     mainActivity ?: return
-    Log.d(TAG, "Canvas:ParentPlotData")
-    val canvasRefresh = remember { mutableStateOf(1) }
+    Log.d(TAG, "ShowData:Parent")
+    val dataRefresh = remember { mutableStateOf(1) }
     LaunchedEffect(mainActivity.refreshMe) {
         while (true) {
             delay(1000)
             val eventFLog = sensorsMa.sensorMa!!.updateEventFLogBackup()
-            canvasRefresh.value += 1
-            Log.d(TAG, "Canvas:Helper:cR${canvasRefresh.value}: sensorEvents list size ${eventFLog.size}")
+            dataRefresh.value += 1
+            Log.d(TAG, "ShowData:UpdateHelper:cR${dataRefresh.value}: sensorEvents list size ${eventFLog.size}")
         }
     }
-    if (canvasRefresh.value > 0){
-        ShowDataPlot(sensorsMa, mainActivity, canvasRefresh)
-        //testCanvasDraw(ds = this)
+    if (dataRefresh.value > 0){
+        ShowDataPlot(sensorsMa, mainActivity, dataRefresh)
         ShowDataText(sensorsMa, columnScope)
     }
 }
@@ -220,10 +219,10 @@ fun ShowDataPlot(sensorsMa: SensorsMa, mainActivity: MainActivity, canvasRefresh
             )
         }
     ) {
-        Log.d(TAG, "Canvas:${canvasRefresh.value}: $size")
+        Log.d(TAG, "ShowData:Plot:${canvasRefresh.value}: $size")
         val eventFLog = sensorsMa.sensorMa!!.eventFLogBackup
         eventFLog.let {
-            //Log.d(TAG, "Canvas: eventFLog.size ${eventFLog.size}")
+            //Log.d(TAG, "ShowData:Plot: eventFLog.size ${eventFLog.size}")
             val canvasHeight = size.height
             val yMid = canvasHeight/2F
             drawText(textMeasure, sensorsMa.sensorMa!!.theSensor.name)
@@ -255,7 +254,6 @@ fun ShowDataPlot(sensorsMa: SensorsMa, mainActivity: MainActivity, canvasRefresh
             }
         }
     }
-
 }
 
 @Composable
