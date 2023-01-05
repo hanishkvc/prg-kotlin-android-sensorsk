@@ -236,6 +236,7 @@ class SensorsMa(private val sensorsType: Int) {
     var sensorMa: SensorMa? = null
     var locationMa: LocationMa = LocationMa()
     var lastSaveTimeStamp: String = ""
+    var fSave: File? = null
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -325,24 +326,25 @@ class SensorsMa(private val sensorsType: Int) {
         return info
     }
 
-    private suspend fun saveEvents(fSave: File) {
+    private suspend fun saveEvents() {
+        fSave ?: return
         sensorMa?.let {
             val sSensorData = it.getTextDataAndClear(SAVE_MINRECORDS)
             if (sSensorData.isNotEmpty()) {
-                fSave.appendText(sSensorData)
+                fSave!!.appendText(sSensorData)
                 lastSaveTimeStamp = sTimeStampHuman(true)
             }
         }
         val sLocationData = locationMa.getTextDataAndClear()
-        fSave.appendText(sLocationData)
+        fSave!!.appendText(sLocationData)
     }
 
     suspend fun saveEventsLoop(fPath: String) {
         withContext(Dispatchers.IO) {
-            val fSave = File(fPath)
+            fSave = File(fPath)
             while (true) {
                 delay(SAVE_CHECKTIME)
-                saveEvents(fSave)
+                saveEvents()
             }
         }
     }
