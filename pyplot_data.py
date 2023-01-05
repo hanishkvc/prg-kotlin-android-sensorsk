@@ -62,7 +62,7 @@ for sensor in sensorsList:
         ax[axi].plot(cv, label=cv.name)
     ax[axi].set_title(sensor)
     ax[axi].legend()
-    ax[axi+1].plot(dt.array[1:]-dt.array[:-1])
+    ax[axi+1].plot(dt.diff().clip(-1000,1000))
 plt.tight_layout()
 fig.savefig("/tmp/pyplotdata.png")
 plt.show()
