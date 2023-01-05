@@ -237,6 +237,7 @@ class SensorsMa(private val sensorsType: Int) {
     var locationMa: LocationMa = LocationMa()
     var lastSaveTimeStamp: String = ""
     var fSave: File? = null
+    var saveMutex = Mutex()
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -328,15 +329,17 @@ class SensorsMa(private val sensorsType: Int) {
 
     private suspend fun saveEvents() {
         fSave ?: return
-        sensorMa?.let {
-            val sSensorData = it.getTextDataAndClear(SAVE_MINRECORDS)
-            if (sSensorData.isNotEmpty()) {
-                fSave!!.appendText(sSensorData)
-                lastSaveTimeStamp = sTimeStampHuman(true)
+        saveMutex.withLock {
+            sensorMa?.let {
+                val sSensorData = it.getTextDataAndClear(SAVE_MINRECORDS)
+                if (sSensorData.isNotEmpty()) {
+                    fSave!!.appendText(sSensorData)
+                    lastSaveTimeStamp = sTimeStampHuman(true)
+                }
             }
+            val sLocationData = locationMa.getTextDataAndClear()
+            fSave!!.appendText(sLocationData)
         }
-        val sLocationData = locationMa.getTextDataAndClear()
-        fSave!!.appendText(sLocationData)
     }
 
     suspend fun saveEventsLoop(fPath: String) {
