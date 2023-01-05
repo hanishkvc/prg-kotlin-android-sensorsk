@@ -19,12 +19,12 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.math.absoluteValue
 
-const val SAVE_MINRECORDS = 1000
-const val SAVE_CHECKTIME = 10000L
+const val SAVE_MIN_RECORDS = 1000
+const val SAVE_CHECK_TIME = 10000L
 
 data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Float = Float.POSITIVE_INFINITY, var max: Float = Float.NEGATIVE_INFINITY) {
     var count: Int = 0
-    var prevValue: Double = Double.NaN
+    private var prevValue: Double = Double.NaN
 
     fun update(value: Float) {
         sum += value
@@ -57,7 +57,7 @@ data class FDataStats(var sum: Float = 0F, var abssum: Float = 0F, var min: Floa
 class LocationMa {
     private var permissionOk: Boolean = false
     private var locationManager: LocationManager? = null
-    var locationLog = arrayListOf<String>()
+    private var locationLog = arrayListOf<String>()
     private var mutex = Mutex()
 
     fun checkPermissionStatus(mainActivity: MainActivity) {
@@ -235,9 +235,9 @@ class SensorsMa(private val sensorsType: Int) {
     var sensorsList: ArrayList<Sensor> = arrayListOf()
     var sensorMa: SensorMa? = null
     var locationMa: LocationMa = LocationMa()
-    var lastSaveTimeStamp: String = ""
-    var fSave: File? = null
-    var saveMutex = Mutex()
+    private var lastSaveTimeStamp: String = ""
+    private var fSave: File? = null
+    private var saveMutex = Mutex()
 
     @JvmName("setSensorManager1")
     fun setSensorManager(sensorManager: SensorManager) {
@@ -274,7 +274,6 @@ class SensorsMa(private val sensorsType: Int) {
     }
 
     suspend fun clearSensorMa(mainActivity: MainActivity) {
-        if (mainActivity == null) return
         sensorMa?.let {
             Toast.makeText(mainActivity, "Removing sensor ${it.theSensor.name}", Toast.LENGTH_SHORT).show()
             monitorRemoveSensor(mainActivity)
@@ -296,7 +295,7 @@ class SensorsMa(private val sensorsType: Int) {
     /**
      * Stop listening to events wrt either the passed sensor or any previously set sensor
      */
-    suspend fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
+    private suspend fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
         val remSensor = sensor ?: sensorMa?.theSensor
         remSensor?.let {
             sensorManager?.unregisterListener(activity, remSensor)
@@ -332,7 +331,7 @@ class SensorsMa(private val sensorsType: Int) {
         fSave ?: return
         saveMutex.withLock {
             sensorMa?.let {
-                val sSensorData = it.getTextDataAndClear(SAVE_MINRECORDS)
+                val sSensorData = it.getTextDataAndClear(SAVE_MIN_RECORDS)
                 if (sSensorData.isNotEmpty()) {
                     fSave!!.appendText(sSensorData)
                     lastSaveTimeStamp = sTimeStampHuman(true)
@@ -347,7 +346,7 @@ class SensorsMa(private val sensorsType: Int) {
         withContext(Dispatchers.IO) {
             fSave = File(fPath)
             while (true) {
-                delay(SAVE_CHECKTIME)
+                delay(SAVE_CHECK_TIME)
                 saveEvents()
             }
         }
