@@ -258,7 +258,7 @@ class SensorsMa(private val sensorsType: Int) {
         }
     }
 
-    fun setSensorMa(sensor: Sensor, mainActivity: MainActivity?) {
+    suspend fun setSensorMa(sensor: Sensor, mainActivity: MainActivity?) {
         if (mainActivity == null) return
         sensorMa?.let {
             if (it.theSensor.name != sensor.name) {
@@ -273,7 +273,7 @@ class SensorsMa(private val sensorsType: Int) {
         Toast.makeText(mainActivity, "Added sensor ${sensorMa!!.theSensor.name}", Toast.LENGTH_SHORT).show()
     }
 
-    fun clearSensorMa(mainActivity: MainActivity) {
+    suspend fun clearSensorMa(mainActivity: MainActivity) {
         if (mainActivity == null) return
         sensorMa?.let {
             Toast.makeText(mainActivity, "Removing sensor ${it.theSensor.name}", Toast.LENGTH_SHORT).show()
@@ -296,11 +296,12 @@ class SensorsMa(private val sensorsType: Int) {
     /**
      * Stop listening to events wrt either the passed sensor or any previously set sensor
      */
-    fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
+    suspend fun monitorRemoveSensor(activity: MainActivity, sensor: Sensor? = null) {
         val remSensor = sensor ?: sensorMa?.theSensor
         remSensor?.let {
             sensorManager?.unregisterListener(activity, remSensor)
             Log.i(TAG, "SensorsMA: Removing Listener for ${it.name}")
+            saveEvents()
         }
     }
 
