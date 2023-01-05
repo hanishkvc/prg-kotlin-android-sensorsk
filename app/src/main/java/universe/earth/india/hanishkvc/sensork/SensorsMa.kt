@@ -300,7 +300,7 @@ class SensorsMa(private val sensorsType: Int) {
         remSensor?.let {
             sensorManager?.unregisterListener(activity, remSensor)
             Log.i(TAG, "SensorsMA: Removing Listener for ${it.name}")
-            saveEvents()
+            saveEvents(1)
         }
     }
 
@@ -327,11 +327,11 @@ class SensorsMa(private val sensorsType: Int) {
         return info
     }
 
-    private suspend fun saveEvents() {
+    private suspend fun saveEvents(saveMinRecords:Int = SAVE_MIN_RECORDS) {
         fSave ?: return
         saveMutex.withLock {
             sensorMa?.let {
-                val sSensorData = it.getTextDataAndClear(SAVE_MIN_RECORDS)
+                val sSensorData = it.getTextDataAndClear(saveMinRecords)
                 if (sSensorData.isNotEmpty()) {
                     fSave!!.appendText(sSensorData)
                     lastSaveTimeStamp = sTimeStampHuman(true)

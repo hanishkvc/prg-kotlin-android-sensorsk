@@ -4,7 +4,7 @@ SensorsK
 
 Author: HanishKVC, 2022
 
-Version: v20230103IST1121
+Version: v20230105IST1846
 
 License: GPL3+
 
@@ -55,6 +55,11 @@ the program should always remain in potrait mode. However for some reason,
 if it keeps changing orientation on your device, remember to disable auto
 screen rotation on your device settings.
 
+NOTE: One can look at the selected sensor's details including data related
+details like min, max, avg, time delta and also how many samples have been
+captured, in the sensor data section in the bottom 1/3rd of the screen, by
+scrolling in this sensor and its data summary details area.
+
 Sampling Rate
 ==============
 
@@ -89,27 +94,26 @@ CSV file
 
 THe logic by default saves/logs sensor data into csv file, at a granularity
 of 1000+ records. The saving to csv is triggered in the background as a
-parallel activity, which runs once every n seconds or so.
+parallel activity, which runs once every 10+ seconds or so.
 
-So captured data gets saved into csv only at periodic intervals, provided
-there is sufficient amount of data. So one needs to wait for 1000+ records
-to be captured wrt a sensor, and inturn the background save logic to trigger
-for the same to get written to the csv file.
+So normally captured data gets saved into csv only at periodic intervals,
+provided there is sufficient amount of data. So one needs to wait for 1000+
+records to be captured wrt a sensor, and inturn the background save logic
+to trigger for the same to get written to the csv file.
 
 One can look at the LastSave datetime info shown along with SensorData
 summary towards the bottom of the screen to confirm that the captured data
-has been saved, before going back (which inturn clears the sensor selection)
-or switching to a different sensor. You may have to scroll down wrt summary
-text to see the same.
-
-NOTE: One can look at the sensor details including data related details
-which also contains how many samples have been captured, in the sensor
-data section in the bottom 1/3rd of the screen, by scrolling wrt sensor
-and its data summary details.
+has been saved, ideally before going back (which inturn clears the sensor
+selection) or switching to a different sensor. You may have to scroll down
+wrt summary text to see the same.
 
 NOTE: One will also see the plot in the screen change, as the background
 save to csv logic saves the data and clears the in memory buffer. The save
 may complete few seconds after that.
+
+If user switchs sensors or clears the sensor selection, even before program
+has captured 1k+ sensor event datas, the program will still try and save
+the currently captured set of data.
 
 The CSV file is maintained in the external/emulated storage area alloted
 for the android application wrt its files.
@@ -123,6 +127,10 @@ wrt the plot.
 
 Pressing back button, when a sensor is already selected, will clear the
 sensor selection. Pressing back button once again will quit the app.
+
+NOTE: Remember to give few seconds between pressing back button to clear
+a sensor selection and pressing back button again to quit the program. So
+that program gets a oppurtunity to save the captured data into csv.
 
 When user reselects the same(again)/different sensor, it takes care of reseting
 the auto scaling wrt y axis to start afresh.
