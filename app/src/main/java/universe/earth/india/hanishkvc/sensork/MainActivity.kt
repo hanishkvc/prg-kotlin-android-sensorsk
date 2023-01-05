@@ -82,8 +82,10 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
                     Toast.makeText(mainActivity, "Press back again, if you want to quit...", Toast.LENGTH_SHORT).show()
                 }
             }
-            sensorsMa.clearSensorMa(mainActivity)
-            refreshMe.value += 1
+            lifecycleScope.launch {
+                sensorsMa.clearSensorMa(mainActivity)
+                refreshMe.value += 1
+            }
         }
         windowHeight = windowManager.defaultDisplay.width
     }
@@ -136,16 +138,19 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
         Log.w(TAG, "OnRestoreInstanceState called $savedInstanceState")
         savedInstanceState ?: return
         val sensorName = savedInstanceState.getString("sensor_name") ?: return
-        var selSensor: Sensor? = null
-        for (curSensor in sensorsMa.sensorsList) {
-            if (curSensor.name == sensorName) {
-                selSensor = curSensor
+        val mainActivity = this
+        lifecycleScope.launch {
+            var selSensor: Sensor? = null
+            for (curSensor in sensorsMa.sensorsList) {
+                if (curSensor.name == sensorName) {
+                    selSensor = curSensor
+                }
             }
-        }
-        selSensor?.let {
-            handleSensorSelection(this, sensorsMa, selSensor)
-            refreshMe.value += 1
-            Log.i(TAG, "Restoring: Previously selected sensor $selSensor")
+            selSensor?.let {
+                handleSensorSelection(mainActivity, sensorsMa, selSensor)
+                refreshMe.value += 1
+                Log.i(TAG, "Restoring: Previously selected sensor $selSensor")
+            }
         }
     }
 
@@ -157,7 +162,7 @@ class MainActivity : ComponentActivity(), SensorEventListener, LocationListener 
 
 }
 
-fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, selSensor: Sensor?) {
+suspend fun handleSensorSelection(mainActivity: MainActivity?, sensorsMa: SensorsMa, selSensor: Sensor?) {
     if (selSensor == null) return
     sensorsMa.setSensorMa(selSensor, mainActivity)
     mainActivity?.let {
@@ -305,10 +310,13 @@ fun MainContent(
                     .fillMaxWidth()
             ) {
                 for (item in sensorsMa.sensorsList) {
+                    val composableCoRoutineScope = rememberCoroutineScope()
                     Button(
                         onClick = {
-                            handleSensorSelection(mainActivity, sensorsMa, item)
-                            mainActivity?.uiNavPos = 1
+                            composableCoRoutineScope.launch {
+                                handleSensorSelection(mainActivity, sensorsMa, item)
+                                mainActivity?.uiNavPos = 1
+                            }
                         },
                     ) {
                         Text(text=item.name)
