@@ -50,6 +50,10 @@ Images
 App (Android version) Usage
 #############################
 
+Allows one to get the list of sensors in a android device and inturn select
+one of them for monitoring live in GUI, as well as log into a csv file for
+later analysis. Parallely GPS location info is also saved into the csv file.
+
 The android program is currently programmed to work in potrait mode. Ideally
 the program should always remain in potrait mode. However for some reason,
 if it keeps changing orientation on your device, remember to disable auto
@@ -59,6 +63,9 @@ NOTE: One can look at the selected sensor's details including data related
 details like min, max, avg, time delta and also how many samples have been
 captured, in the sensor data section in the bottom 1/3rd of the screen, by
 scrolling in this sensor and its data summary details area.
+
+ALERT: Currently the program is written to be a forground activity with a
+live view/plot of the sensor being monitored.
 
 Sampling Rate
 ==============
@@ -132,12 +139,27 @@ NOTE: Remember to give few seconds between pressing back button to clear
 a sensor selection and pressing back button again to quit the program. So
 that program gets a oppurtunity to save the captured data into csv.
 
-When user reselects the same(again)/different sensor, it takes care of reseting
-the auto scaling wrt y axis to start afresh.
+When user reselects the same(again)/different sensor, it takes care of
+reseting the auto scaling wrt y axis to start afresh.
 
 
 Python helper script
 ######################
+
+This plots the captured sensor parameters wrt each sensor, as well as the
+deltas wrt the timestamps of the sensor data captures.
+
+It also prints summary info wrt data values of each of the parameter captured
+wrt each sensor.
+
+ALERT: The time stamp deltas are clipped to be between the min and median
+values found wrt the timestamp deltas.
+
+ALERT: As there could be multiple sensors monitored in a single session, the
+plots may not be clearly visible in the pyplot window. However one can look
+into the plot saved into /tmp/pyplotdata.png to get a clear picture of data.
+
+
 
 Currently as the Android sensor data capture dont support a fixed sampling
 rate, and it can switch between low and high sampling rates, a fft of the
