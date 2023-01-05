@@ -31,12 +31,18 @@ sensorsList = df[FNSensor].unique()
 print("NumOfSensors:", sensorsList.size)
 print("Sensors:", sensorsList)
 
-fig, ax = plt.subplots(sensorsList.size, 1)
-fig.set_size_inches(12, 6*sensorsList.size)
-axi = -1
+heightRatios = []
+for i in range(sensorsList.size):
+    heightRatios.append(3)
+    heightRatios.append(1)
+
+fig, ax = plt.subplots(sensorsList.size*2, 1, gridspec_kw={'height_ratios':heightRatios})
+print("DBUG:Axes:",ax.shape)
+fig.set_size_inches(12, 6*sensorsList.size*1.5)
+axi = -2
 for sensor in sensorsList:
     print("\nPlotting:", sensor)
-    axi += 1
+    axi += 2
     # Extract data belonging to current sensor
     bdf = df[df[FNSensor] == sensor]
     print(bdf)
@@ -56,6 +62,8 @@ for sensor in sensorsList:
         ax[axi].plot(cv, label=cv.name)
     ax[axi].set_title(sensor)
     ax[axi].legend()
+    ax[axi+1].plot(dt.array[1:]-dt.array[:-1])
 plt.tight_layout()
 fig.savefig("/tmp/pyplotdata.png")
 plt.show()
+
