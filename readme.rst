@@ -167,3 +167,9 @@ captured sample data is not done. NOTE: One can use the timestamp info
 stored with each record entry, to get the sample rate wrt adjacent samples,
 as well as on average over a given window of data.
 
+Misc
+######
+
+.. image:: data/icon.png
+   :alt: Maye a possible icon for the android program
+
